@@ -39,9 +39,10 @@ const SignUp = () => {
         }
     };
     
-    if (user){
+    if (user.user){
         navigate('/')
     }
+
     return (
         <Layout>
             <div className="SignUp">

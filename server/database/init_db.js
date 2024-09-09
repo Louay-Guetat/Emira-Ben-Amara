@@ -10,7 +10,7 @@ const db = mysql.createConnection({
 
 const saltRounds = 10;
 
-const createTableSQL = `
+const createUserTable = `
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -19,14 +19,32 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(8),
     role VARCHAR(8),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-`;
+);`;
 
 const checkAdminExistSQL = "SELECT * FROM users WHERE id = 1";
 const insertAdminSQL = `
 INSERT INTO users (id, username, email, password, phone, role)
-VALUES (1, 'Emira', 'Emira@gmail.com', ?, '12345678', 'admin');
-`;
+VALUES (1, 'Emira', 'Emira@gmail.com', ?, '12345678', 'admin');`;
+
+const createThemesTable = `
+CREATE TABLE IF NOT EXISTS themes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`;
+
+const createAppointmentTable = `
+CREATE TABLE IF NOT EXISTS appointments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(255) NOT NULL UNIQUE,
+    desired_date DATE NOT NULL,
+    user_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);`;
 
 db.connect((err) => {
     if (err) {
@@ -36,13 +54,13 @@ db.connect((err) => {
 
     console.log('Connected to the database.');
 
-    db.query(createTableSQL, (err, results) => {
+    db.query(createUserTable, (err, results) => {
         if (err) {
             console.error('Error creating table:', err);
             return;
         }
 
-        console.log('Table created or already exists.');
+        console.log('Users Table created or already exists.');
 
         // Check if the admin user exists
         db.query(checkAdminExistSQL, (err, results) => {
@@ -52,7 +70,7 @@ db.connect((err) => {
             }
 
             if (results.length > 0) {
-                console.log('Admin user already exists.');
+                console.log('Admin user exists.');
                 db.end();
                 return;
             }
@@ -76,4 +94,22 @@ db.connect((err) => {
             });
         });
     });
+
+    db.query(createThemesTable, (err, results) => {
+        if (err) {
+            console.error('Error creating table:', err);
+            return;
+        }
+
+        console.log('Themes Table created or already exists.');
+    });
+
+    db.query(createAppointmentTable, (err, results) => {
+        if (err) {
+            console.error('Error creating table:', err);
+            return;
+        }
+
+        console.log('Appointments Table created or already exists.');
+    });    
 });

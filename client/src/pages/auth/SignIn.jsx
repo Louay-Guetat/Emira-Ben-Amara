@@ -12,7 +12,6 @@ const SignIn = () => {
     const navigate = useNavigate();
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [pwd, setPwd] = useState('');
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -25,8 +24,11 @@ const SignIn = () => {
             if (response.status === 200) {
                 // Set the token as a cookie with expiration of 1 day
                 Cookies.set('token', response.data.token, { expires: 1 });
-
-                navigate('/'); // Redirect to home or any other page
+                if (response.data.user.role === 'admin'){
+                    navigate('/admin/dashboard')
+                }else{
+                    navigate('/');
+                }
             }
         } catch (error) {
             console.error(error);
@@ -34,7 +36,7 @@ const SignIn = () => {
         }
     };
 
-    if (user){
+    if (user.user){
         navigate('/')
     }
 

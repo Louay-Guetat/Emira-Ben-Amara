@@ -1,11 +1,15 @@
+import AdminLayout from "../../Layouts/AdminLayout";
+import '../../scss/pages/admin/Dashboard.scss'
 
 
 const Dashboard = () =>{
     
     return(
-        <div className="dashboard">
-
-        </div>
+        <AdminLayout>
+            <div className="dashboard">
+                hello
+            </div>
+        </AdminLayout>
     )
 }
 
