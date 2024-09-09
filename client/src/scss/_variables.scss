@@ -1,0 +1,21 @@
+$background-color: #faf9f8;
+$main-color: #ede9e2;
+$secondary-color: #a78262;
+
+$default-font: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+$default-font-color: #55504b;
+
+*{
+    font-family: $default-font;
+}
+
+html{
+    margin: 0;
+    color: $default-font-color;
+}
+
+body{
+    background-color: $background-color;
+}
+
+

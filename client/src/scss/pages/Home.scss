@@ -1,0 +1,56 @@
+@import '../variables';
+
+.home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .banner {
+        position: relative;
+        width: 100%;
+        height: 90vh;
+        background-image: url('../../utils/home-banner.jpeg');
+        background-position: center;
+        .description {
+            color: $main-color;
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 15%;
+            left: 1%;
+            width: 30%;
+            h1{
+                font-size: 64px;
+            }
+
+            span{
+                font-size: 36px;
+            }
+
+            button{
+                display: flex;
+                align-items: center;
+                width: 50%;
+                margin-top: 10%;
+                padding: 1%;
+                font-size: 24px;
+                svg{
+                    margin-left: 5%;
+                }
+            }
+        }
+
+        .signature {
+            position: absolute; 
+            bottom: 0; 
+            right: 2.5%;
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            box-sizing: border-box;
+            color: $main-color;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 32px;
+        }
+    }
+}
