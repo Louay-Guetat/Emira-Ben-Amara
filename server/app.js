@@ -6,6 +6,7 @@ const init_db = require('./database/init_db')
 const authRoutes = require('./routes/auth'); 
 const themesRoutes = require('./routes/themes'); 
 const themePartsRoutes = require('./routes/themeParts'); 
+const modulesRoutes = require('./routes/modules'); 
 const path = require('path');
 
 const app = express();
@@ -29,6 +30,9 @@ app.use('/uploads/themes', express.static(path.join(__dirname, 'uploads/themes')
 
 app.use('/themeParts', themePartsRoutes);
 app.use('/uploads/themeParts', express.static(path.join(__dirname, 'uploads/themeParts')));
+
+app.use('/modules', modulesRoutes);
+app.use('/uploads/modules', express.static(path.join(__dirname, 'uploads/modules')));
 
 
 

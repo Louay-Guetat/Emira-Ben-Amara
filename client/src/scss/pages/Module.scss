@@ -1,0 +1,59 @@
+@import '../variables';
+
+.modules{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0%;
+    background: 
+    linear-gradient(to bottom, white 65%, transparent 35%) center/35%, 
+    $main-color center/35%;
+    height: 90vh;
+
+    h1{
+        margin: 1%;
+        font-size: 64px;
+    }
+
+    span{
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    ol{
+        font-size: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        margin: 1% 0%;
+
+        li{
+
+        }
+    }
+
+    .module{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        video{
+
+        }
+
+        .download{
+            display: flex;
+            align-items: center;
+            background-color: $secondary-color;
+            color: $main-color;
+            padding: 1% 5%;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            margin-top: 2%;
+        }
+    }
+}

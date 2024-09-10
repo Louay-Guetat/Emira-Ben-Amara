@@ -1,0 +1,67 @@
+@import '../variables';
+
+.themePartsDetails{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0%;
+    background: 
+    linear-gradient(to bottom, white 65%, transparent 35%) center/35%, 
+    $main-color center/35%;
+    height: 90vh;
+
+    h1{
+        margin: 4%;
+        font-size: 64px;
+    }
+
+    .parts{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+
+        img{
+            width: 20%;
+        }
+
+        .parts-details{
+            margin: 1% 0% 0% 1%;
+            span{
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            ol{
+                font-size: 24px;
+                line-height: 150%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+                margin-top: 5%;
+
+                li{
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    button{
+        position: absolute;
+        top: 62.5%;
+        right: 31.5%;
+        display: flex;
+        align-items: center;
+        background-color: $secondary-color;
+        color: $main-color;
+        padding: 0.5%;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+    }
+}

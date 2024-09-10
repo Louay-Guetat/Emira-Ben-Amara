@@ -46,6 +46,20 @@ CREATE TABLE IF NOT EXISTS themeParts (
     CONSTRAINT fk_theme FOREIGN KEY (themeID) REFERENCES themes(id) ON DELETE CASCADE
 );`;
 
+const createModuleTable = `
+CREATE TABLE IF NOT EXISTS modules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    themePartID INT NOT NULL,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL,
+    video VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL,
+    ebook VARCHAR(255),
+    assessments VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_themePart FOREIGN KEY (themePartID) REFERENCES themeParts(id) ON DELETE CASCADE
+);`;
+
 const createAppointmentTable = `
 CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,6 +136,15 @@ db.connect((err) => {
         }
 
         console.log('themeParts Table created or already exists.');
+    });
+
+    db.query(createModuleTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Modules table:', err);
+            return;
+        }
+
+        console.log('Modules Table created or already exists.');
     });
 
     db.query(createAppointmentTable, (err, results) => {

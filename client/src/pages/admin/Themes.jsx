@@ -138,6 +138,10 @@ const Themes = () => {
         setEditing(true)
         setID(theme.id)
         setShowThemeParts(true)
+        window.scrollTo({
+            top: document.body.scrollHeight,  
+            behavior: 'smooth'                
+        });
     }
 
     return (

@@ -34,6 +34,24 @@ const getImagePathFromDb = (themePartId, callback) => {
 
 const upload = multer({ storage: storage });
 
+router.get('/getAllThemeParts', (req, res) => {
+    pool.execute(
+        "SELECT * FROM themeParts",
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            if (result.length > 0) {
+                // Return all themes
+                res.status(200).json({ themeParts: result });
+            } else {
+                res.status(200).json({ themeParts: [] });
+            }
+        }
+    );
+});
+
 router.get('/getThemeParts', (req, res) => {
     const { themeID } = req.query;
 
