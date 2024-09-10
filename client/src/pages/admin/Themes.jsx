@@ -13,6 +13,7 @@ import '../../scss/pages/admin/Themes.scss'
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { SERVER } from '../../config/config'
+import ThemeParts from './ThemeParts';
 
 const Themes = () => {
     const [themes, setThemes] = useState([]);
@@ -20,10 +21,12 @@ const Themes = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [image, setImage] = useState('');
-    const [selectedImage, setSelectedImage] = useState(''); // State to manage selected image
-    const [modalOpen, setModalOpen] = useState(false); // State to manage modal visibility
+    const [selectedImage, setSelectedImage] = useState(''); 
+    const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState(false);
     const [id, setID] = useState()
+
+    const [showThemePart, setShowThemeParts] = useState(false)
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -70,6 +73,7 @@ const Themes = () => {
         setID('')
         setImage('')
         setForm(true)
+        setShowThemeParts(false)
     }
 
     const handleSubmit = async (e) => {
@@ -116,7 +120,8 @@ const Themes = () => {
         }
     };    
 
-    const handleImageClick = (imageSrc) => {
+    const handleImageClick = (event, imageSrc) => {
+        event.stopPropagation()
         setSelectedImage(imageSrc);
         setModalOpen(true);
     };
@@ -126,13 +131,13 @@ const Themes = () => {
         setSelectedImage('');
     };
 
-    const handleThemeUpdate = (theme) =>{
+    const handleThemeClick = (theme) =>{
         setDescription(theme.description)
         setTitle(theme.title)
         setForm(true)
         setEditing(true)
         setID(theme.id)
-        console.log(theme)
+        setShowThemeParts(true)
     }
 
     return (
@@ -140,10 +145,10 @@ const Themes = () => {
             <div className="themes">
                 <div className='themes-table'>
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                        <Table sx={{ minWidth: 640 }} aria-label="customized table">
                             <TableHead>
                                 <TableRow>
-                                    <StyledTableCell>Titre</StyledTableCell>
+                                    <StyledTableCell align="center">Titre</StyledTableCell>
                                     <StyledTableCell align="center">Description</StyledTableCell>
                                     <StyledTableCell align="center">Image</StyledTableCell>
                                     <StyledTableCell align="center">Date de Creation</StyledTableCell>
@@ -152,14 +157,14 @@ const Themes = () => {
                             <TableBody>
                                 {themes.length > 0 ? (
                                     themes.map((theme) => (
-                                        <StyledTableRow key={theme.id} onClick={() => handleThemeUpdate(theme)}>
-                                            <StyledTableCell component="th" scope="row">
+                                        <StyledTableRow key={theme.id} onClick={() => handleThemeClick(theme)}>
+                                            <StyledTableCell align="center">
                                                 {theme.title}
                                             </StyledTableCell>
                                             <StyledTableCell align="center">{theme.description}</StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <img src={`${SERVER}${theme.image}`} alt={theme.title} style={{ height: '50px' }}
-                                                     onClick={() => handleImageClick(`${SERVER}${theme.image}`)}
+                                                     onClick={(e) => handleImageClick(e, `${SERVER}${theme.image}`)}
                                                  />
                                             </StyledTableCell>
                                             <StyledTableCell align="center">{new Date(theme.created_at).toLocaleString('fr-FR', {
@@ -228,7 +233,13 @@ const Themes = () => {
 
                             <div className="form-actions">
                                 <button type="submit"> {editing ? 'Modifier' : 'Ajouter'} </button>
-                                <button onClick={() => setForm(false)}> Close </button>
+                                <button onClick={() => {
+                                        setShowThemeParts(false);
+                                        setForm(false)
+                                    }}
+                                > 
+                                    Close 
+                                </button>
 
                             </div>
                         </form>
@@ -240,6 +251,8 @@ const Themes = () => {
                 onClose={handleModalClose}
                 imageSrc={selectedImage}
             />
+
+            {showThemePart && <ThemeParts themeID={id} themeTitle={title} />}
         </AdminLayout>
     );
 };

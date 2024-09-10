@@ -35,6 +35,17 @@ CREATE TABLE IF NOT EXISTS themes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`;
 
+const createThemePartsTable = `
+CREATE TABLE IF NOT EXISTS themeParts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    themeID INT NOT NULL,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL,
+    image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_theme FOREIGN KEY (themeID) REFERENCES themes(id) ON DELETE CASCADE
+);`;
+
 const createAppointmentTable = `
 CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,16 +108,25 @@ db.connect((err) => {
 
     db.query(createThemesTable, (err, results) => {
         if (err) {
-            console.error('Error creating table:', err);
+            console.error('Error creating Themes table:', err);
             return;
         }
 
         console.log('Themes Table created or already exists.');
     });
 
+    db.query(createThemePartsTable, (err, results) => {
+        if (err) {
+            console.error('Error creating themeParts table:', err);
+            return;
+        }
+
+        console.log('themeParts Table created or already exists.');
+    });
+
     db.query(createAppointmentTable, (err, results) => {
         if (err) {
-            console.error('Error creating table:', err);
+            console.error('Error creating Appointments table:', err);
             return;
         }
 
