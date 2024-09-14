@@ -5,7 +5,7 @@ import useUser from './useUser';
 const ProtectedRoute = ({ element: Component, ...rest }) => {
     const {user} = useUser(); 
     if (user){
-        return user && user.user.role === 'admin' ? (
+        return user && user.role === 'admin' ? (
             <Component {...rest} />
         ) : (
             <Navigate to="/" />

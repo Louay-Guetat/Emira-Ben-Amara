@@ -12,7 +12,7 @@ const useUser = () => {
     const fetchUser = async () => {
       try {
         const userData = await getUserInfo();
-        setUser(userData);
+        setUser(userData.user);
       } catch (error) {
         console.error('Failed to fetch user data');
         // Optionally handle error state here

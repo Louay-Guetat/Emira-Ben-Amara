@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(255) NOT NULL UNIQUE,
-    desired_date DATE NOT NULL,
+    desired_date DATETIME NOT NULL,
+    confirmed_date DATETIME,
     user_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)

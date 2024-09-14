@@ -7,6 +7,8 @@ const authRoutes = require('./routes/auth');
 const themesRoutes = require('./routes/themes'); 
 const themePartsRoutes = require('./routes/themeParts'); 
 const modulesRoutes = require('./routes/modules'); 
+const appointmentsRoutes = require('./routes/appointments')
+
 const path = require('path');
 
 const app = express();
@@ -34,6 +36,7 @@ app.use('/uploads/themeParts', express.static(path.join(__dirname, 'uploads/them
 app.use('/modules', modulesRoutes);
 app.use('/uploads/modules', express.static(path.join(__dirname, 'uploads/modules')));
 
+app.use('/appointments', appointmentsRoutes)
 
 
 app.listen(port, () => {
