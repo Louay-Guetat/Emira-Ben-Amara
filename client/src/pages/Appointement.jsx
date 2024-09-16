@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css"; // Import the styles for the datepicker
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faPhone, faQuoteRight, faSignature, faVoicemail} from '@fortawesome/free-solid-svg-icons';
+import { faPhone, faQuoteRight, faSignature} from '@fortawesome/free-solid-svg-icons';
 import Layout from '../Layouts/Layout';
 import '../scss/pages/Appointement.scss';
 import banner from '../utils/home-banner.jpeg';
@@ -10,6 +9,10 @@ import useUser from '../hooks/useUser';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
 import { SERVER } from '../config/config';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs from 'dayjs';
 
 const Appointement = () => {
     const [startDate, setStartDate] = useState(null);
@@ -109,15 +112,17 @@ const Appointement = () => {
                                 </div>
                             )}
                         <div className="input-container">
-                            <FontAwesomeIcon icon={faCalendarAlt} className="calendar-icon" />
-                            <DatePicker
-                                selected={startDate}
-                                onChange={(date) => setStartDate(date)}
-                                showTimeSelect
-                                dateFormat="dd/MM/yyyy, hh:mm "
-                                placeholderText="Choisir date et Heure"
-                                required
-                            />
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateTimePicker
+                                    label="Choisir la date et l'heure du rendez-vous que vous souhaité"
+                                    value={startDate}
+                                    onChange={(date) => setStartDate(date)}
+                                    minDate={dayjs().add(1, 'day')}
+                                    minTime={dayjs().hour(8).minute(0)}
+                                    maxTime={dayjs().hour(19).minute(0)}
+                                    ampm={false}
+                                />
+                            </LocalizationProvider>
                         </div>
                         <label> Fuseau horaire de l'événement: {timezoneInfo} </label>
                         <button type='submit'> Réserver </button>

@@ -9,6 +9,7 @@ import ProtectedRoute from './hooks/ProtectedRoute';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import Themes from './pages/admin/Themes';
+import Visioconference from './pages/visioconference';
 
 const App = () => {
   return (
@@ -26,6 +27,9 @@ const App = () => {
         <Route path='/admin/dashboard' element={<ProtectedRoute element={Dashboard} />} />
         <Route path='/admin/agenda' element={<ProtectedRoute element={Agenda} />} />
         <Route path='/admin/themes' element={<ProtectedRoute element={Themes} />} />
+
+        {/* Visioconference routes */}
+        <Route path='/visioconference' element={<Visioconference />} />
       </Routes>
     </Router>
   );

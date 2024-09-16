@@ -1,0 +1,107 @@
+@import '../../variables';
+:root {
+    --fc-border-color: #4a4a4a;
+    --fc-daygrid-event-dot-width: 5px;
+    --fc-theme-color: #2c3e50;
+    --fc-accent-color: #e74c3c;
+    --fc-accent-color-dark: #c0392b; // Manually define a darker version
+    --fc-bg-color: #ecf0f1;
+  }
+  
+  .fc-theme-standard .fc-list-day-cushion {
+    background-color: var(--fc-bg-color);
+    color: var(--fc-accent-color);
+  }
+  
+  .fc .fc-list-day-cushion,
+  .fc .fc-list-table td {
+    color: var(--fc-theme-color);
+    &:hover {
+      background-color: var(--fc-bg-color);
+      color: var(--fc-accent-color);
+    }
+  }
+  
+  .agenda {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 2%;
+  
+    h1 {
+      margin-left: 50px;
+      color: var(--fc-theme-color);
+    }
+  
+    .main {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      flex: 100%;
+  
+      #external-events {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        flex: 10%;
+        max-height: 77.25vh;
+        overflow-y: auto;
+        scroll-behavior: auto;
+        background-color: var(--fc-bg-color);
+        padding: 15px;
+        border-right: 1px solid var(--fc-border-color);
+        border-radius: 10px;
+        border: none;
+  
+        .fc-event {
+            display: flex;
+            padding: 10px;
+            background-color: $secondary-color;
+            color: $main-color;
+            border-radius: 5px;
+            width: 80%;
+            margin: 10px 0px;
+            cursor: pointer;
+            color: black;
+            text-align: center;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            
+            &:hover {
+                background-color: var(--fc-accent-color-dark); // Use the manually defined darker color
+            }
+
+            button{
+                border: none;
+                background-color: transparent;
+                cursor: pointer;
+            }
+        }
+  
+        p ,span{
+          color: black;
+        }
+      }
+  
+      #calendar-container {
+        width: 100%;
+        flex: 80%;
+        padding: 10px;
+        margin: 0px 10px;
+        background-color: var(--fc-bg-color);
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+        .fc-direction-ltr {
+          width: 100%;
+          max-height: 78vh;
+          color: var(--fc-theme-color);
+          background-color: $main-color;
+          border-radius: 10px;
+          border: 1px solid var(--fc-border-color);
+        }
+      }
+    }
+  }
+  

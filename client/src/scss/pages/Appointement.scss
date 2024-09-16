@@ -74,9 +74,37 @@
             .input-container {
                 position: relative;
                 display: inline-block;
+
+                .css-z3c6am-MuiFormControl-root-MuiTextField-root{
+                    width: 98.5%;
+                }
+                .MuiOutlinedInput-root {
+                    display: flex;
+                    width: 100%;
+                    border-radius: 8px;
+                    padding: 10px;
+                }
             
-                .react-datepicker-wrapper {
-                    width: 90%;
+                .MuiInputLabel-root {
+                    color: $secondary-color;
+                    font-weight: 600;
+                }
+            
+                .MuiOutlinedInput-notchedOutline {
+                    border-color: $main-color;
+                }
+            
+                &:hover .MuiOutlinedInput-notchedOutline {
+                    border-color: $main-color;
+                }
+            
+                .MuiSvgIcon-root {
+                    margin: 5px;
+                    color: $secondary-color; 
+                }
+            
+                .Mui-focused .MuiOutlinedInput-notchedOutline {
+                    border-color: $secondary-color;
                 }
             
                 input {

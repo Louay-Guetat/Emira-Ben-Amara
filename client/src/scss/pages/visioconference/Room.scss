@@ -1,0 +1,49 @@
+@import '../../variables';
+
+.Room{
+    display: flex;
+    .RoomContainer{
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+    
+        .VideoWrapper{
+            display: flex;
+            flex-wrap: wrap;    
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+    
+            video {
+                width: 550px;
+                height: 150px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+    
+            .localVideo {
+                width: 550px;
+                height: 200px;
+            }
+        }
+    }
+    
+    .VideoBox{
+        position: relative;
+        margin: 10px;
+        cursor: pointer;
+      
+        .fas {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          font-size: 16px;
+          color: white;
+          cursor: pointer;
+        }
+    }    
+}
