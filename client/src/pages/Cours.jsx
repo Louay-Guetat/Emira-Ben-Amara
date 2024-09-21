@@ -81,7 +81,6 @@ const Cours = () => {
                     </div>
                 </div>
             )}
-            
         </Layout>
     );
 };

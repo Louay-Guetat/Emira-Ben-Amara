@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS themes (
     title VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255) NOT NULL,
     image VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`;
 
@@ -60,11 +61,33 @@ CREATE TABLE IF NOT EXISTS modules (
     CONSTRAINT fk_themePart FOREIGN KEY (themePartID) REFERENCES themeParts(id) ON DELETE CASCADE
 );`;
 
+const createUserThemes_purchasesTable = 
+`CREATE TABLE IF NOT EXISTS user_themes_purchases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    theme_id INT NOT NULL,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_theme_purchase_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_theme_purchase_theme FOREIGN KEY (theme_id) REFERENCES themes(id) ON DELETE CASCADE,
+    UNIQUE (user_id, theme_id)
+);`
+
+const createUserModules_purchasesTable = 
+`CREATE TABLE IF NOT EXISTS user_modules_purchases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    module_id INT NOT NULL,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_module_purchase_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_module_purchase_module FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE CASCADE,
+    UNIQUE (user_id, module_id)
+);`
+
 const createAppointmentTable = `
 CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
     full_name VARCHAR(30) NOT NULL,
     desired_date DATETIME NOT NULL,
     confirmed_date DATETIME,
@@ -72,6 +95,16 @@ CREATE TABLE IF NOT EXISTS appointments (
     appointement_link VARCHAR(255) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
+);`;
+
+const createEventsTable = `
+CREATE TABLE IF NOT EXISTS events(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255), 
+    price FLOAT NOT NULL,
+    date_event DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );`;
 
 db.connect((err) => {
@@ -157,5 +190,32 @@ db.connect((err) => {
         }
 
         console.log('Appointments Table created or already exists.');
+    });    
+
+    db.query(createEventsTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Events table:', err);
+            return;
+        }
+
+        console.log('Events Table created or already exists.');
+    });   
+
+    db.query(createUserThemes_purchasesTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Events table:', err);
+            return;
+        }
+
+        console.log('UserThemes Purchase Table created or already exists.');
+    });    
+
+    db.query(createUserModules_purchasesTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Events table:', err);
+            return;
+        }
+
+        console.log('UserModules Purchase Table created or already exists.');
     });    
 });

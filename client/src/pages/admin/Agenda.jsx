@@ -16,7 +16,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import ErrorBoundary from '../../hooks/ErrorBoundary.jsx';
 import '../../scss/pages/admin/Agenda.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-regular-svg-icons'; // Import the regular version of the user icon
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const Agenda = () =>{

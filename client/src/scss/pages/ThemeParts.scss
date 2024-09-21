@@ -19,13 +19,14 @@
     .parts{
         display: flex;
         justify-content: center;
-        width: 100%;
-
+        width: 50%;
+        
         img{
-            width: 20%;
+            width: 40%;
         }
 
         .parts-details{
+            width: 80%;
             margin: 1% 0% 0% 1%;
             span{
                 font-size: 18px;
@@ -44,6 +45,10 @@
 
                 li{
                     cursor: pointer;
+
+                    &:hover{
+                        scale: 1.05;
+                    }
                 }
             }
         }

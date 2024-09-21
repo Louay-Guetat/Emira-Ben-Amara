@@ -11,6 +11,9 @@ const themesRoutes = require('./routes/themes');
 const themePartsRoutes = require('./routes/themeParts');
 const modulesRoutes = require('./routes/modules');
 const appointmentsRoutes = require('./routes/appointments');
+const contactRoutes = require('./routes/contact')
+const eventsRoutes = require('./routes/events')
+const stripeRoutes = require('./routes/stripe')
 
 // Initialize Express app and HTTP server
 const app = express();
@@ -57,7 +60,9 @@ app.use('/themes', themesRoutes);
 app.use('/themeParts', themePartsRoutes);
 app.use('/modules', modulesRoutes);
 app.use('/appointments', appointmentsRoutes);
-
+app.use('/contact', contactRoutes)
+app.use('/events', eventsRoutes)
+app.use('/stripe', stripeRoutes)
 
 io.on("connection", (socket) => {
   socket.emit("me", socket.id)

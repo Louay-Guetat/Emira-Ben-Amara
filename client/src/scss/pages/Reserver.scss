@@ -1,0 +1,46 @@
+@import '../variables';
+
+.fc-event{
+    display: flex;
+    align-items: center;
+    width: 102%;
+}
+
+.reserver{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    margin: 1% 0%;
+    h1{
+        margin: 5px 0px;
+    }
+
+    span{
+        color: $secondary-color;
+    }
+
+    .main{
+        margin-top: 5%;
+        width: 90%;
+        display: flex;
+        background-color: $main-color;
+        padding: 10px;
+        margin: 1% 10px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+        #calendar-container{
+            width: 100%;
+            .fc-direction-ltr {
+                width: 100%;
+                max-height: 80vh;
+                color: var(--fc-theme-color);
+                background-color: $main-color;
+                border-radius: 10px;
+                border: 1px solid var(--fc-border-color);
+            }
+        }
+    }
+}

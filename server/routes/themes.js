@@ -54,7 +54,7 @@ router.get('/getThemes', (req, res) => {
 });
 
 router.post('/addTheme', upload.single('image'), (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, price } = req.body;
     const imageUrl = req.file ? `/uploads/themes/${req.file.filename}` : null; // Get image URL if uploaded
 
     // Validate input
@@ -63,8 +63,8 @@ router.post('/addTheme', upload.single('image'), (req, res) => {
     }
 
     // Insert the new theme into the database
-    const insertQuery = "INSERT INTO themes (title, description, image) VALUES (?, ?, ?)";
-    pool.execute(insertQuery, [title, description, imageUrl], (err, result) => {
+    const insertQuery = "INSERT INTO themes (title, description, price, image) VALUES (?, ?, ?, ?)";
+    pool.execute(insertQuery, [title, description, price, imageUrl], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -83,11 +83,11 @@ router.post('/addTheme', upload.single('image'), (req, res) => {
 });
 
 router.put('/updateTheme', upload.single('image'), (req, res) => {
-    const { id, title, description } = req.body;
+    const { id, title, description, price } = req.body;
     const newImageUrl = req.file ? `/uploads/themes/${req.file.filename}` : null;
 
     // Validate input
-    if (!title || !description) {
+    if (!title || !description || !price) {
         return res.status(400).json({ error: 'Title and description are required.' });
     }
 
@@ -113,8 +113,8 @@ router.put('/updateTheme', upload.single('image'), (req, res) => {
         }
 
         // Update the theme in the database
-        const updateQuery = "UPDATE themes SET title = ?, description = ?, image = ? WHERE id = ?";
-        pool.execute(updateQuery, [title, description, newImageUrl || oldImageUrl, id], (err, result) => {
+        const updateQuery = "UPDATE themes SET title = ?, description = ?, price = ?, image = ? WHERE id = ?";
+        pool.execute(updateQuery, [title, description, price, newImageUrl || oldImageUrl, id], (err, result) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }

@@ -88,86 +88,93 @@ router.get('/getModules', (req, res) => {
 
 // POST: Add a new module
 router.post('/addModule', upload.fields([
-  { name: 'video', maxCount: 1 },
-  { name: 'ebook', maxCount: 1 },
-  { name: 'assessments', maxCount: 1 }
-]), async (req, res) => {
+    { name: 'video', maxCount: 1 },
+    { name: 'ebook', maxCount: 1 },
+    { name: 'assessments', maxCount: 1 }
+  ]), (req, res) => {
   const { themePartID, title, description, price } = req.body;
 
-  try {
-    const videoPath = req.files['video'] ? `/uploads/modules/videos/${req.files['video'][0].filename}` : null;
-    const ebookPath = req.files['ebook'] ? `/uploads/modules/ebooks/${req.files['ebook'][0].filename}` : null;
-    const assessmentPath = req.files['assessments'] ? `/uploads/modules/assessments/${req.files['assessments'][0].filename}` : null;
+  const videoPath = req.files['video'] ? `/uploads/modules/videos/${req.files['video'][0].filename}` : null;
+  const ebookPath = req.files['ebook'] ? `/uploads/modules/ebooks/${req.files['ebook'][0].filename}` : null;
+  const assessmentPath = req.files['assessments'] ? `/uploads/modules/assessments/${req.files['assessments'][0].filename}` : null;
 
-    const insertQuery = `
-      INSERT INTO modules (themePartID, title, description, price, video, ebook, assessments)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
+  const insertQuery = `
+    INSERT INTO modules (themePartID, title, description, price, video, ebook, assessments)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
 
-    const [result] = await pool.execute(insertQuery, [themePartID, title, description, price, videoPath, ebookPath, assessmentPath]);
+  pool.execute(insertQuery, [themePartID, title, description, price, videoPath, ebookPath, assessmentPath], (err, result) => {
+    if (err) {
+      console.error('Error adding module:', err);
+      return res.status(500).json({ error: 'Failed to add module' });
+    }
 
-    res.status(200).json({
-      message: "Module added successfully",
-      module: {
-        id: result.insertId,
-        themePartID,
-        title,
-        description,
-        price,
-        video: videoPath,
-        ebook: ebookPath,
-        assessments: assessmentPath,
+    // Fetch the newly added module using the insertId
+    const selectQuery = "SELECT * FROM modules WHERE id = ?";
+    pool.execute(selectQuery, [result.insertId], (err, modules) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
       }
+
+      // Return the newly added module
+      res.status(200).json({
+        message: "Module added successfully",
+        module: modules[0]
+      });
     });
-  } catch (err) {
-    console.error('Error adding module:', err);
-    res.status(500).json({ error: 'Failed to add module' });
-  }
+  });
 });
+
 
 // PUT: Update an existing module
 router.put('/updateModule', upload.fields([
   { name: 'video', maxCount: 1 },
   { name: 'ebook', maxCount: 1 },
   { name: 'assessments', maxCount: 1 }
-]), async (req, res) => {
+]), (req, res) => {
   const { id, title, description, price } = req.body;
 
-  try {
-    const [module] = await pool.execute("SELECT * FROM modules WHERE id = ?", [id]);
-    if (!module.length) {
+  // Fetch the existing module
+  const selectQuery = "SELECT * FROM modules WHERE id = ?";
+  pool.execute(selectQuery, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (!result.length) {
       return res.status(404).json({ error: "Module not found" });
     }
 
-    const existingModule = module[0];
+    const existingModule = result[0];
     const videoPath = req.files['video'] ? `/uploads/modules/videos/${req.files['video'][0].filename}` : existingModule.video;
     const ebookPath = req.files['ebook'] ? `/uploads/modules/ebooks/${req.files['ebook'][0].filename}` : existingModule.ebook;
     const assessmentPath = req.files['assessments'] ? `/uploads/modules/assessments/${req.files['assessments'][0].filename}` : existingModule.assessments;
 
+    // Update the module
     const updateQuery = `
       UPDATE modules
       SET title = ?, description = ?, price = ?, video = ?, ebook = ?, assessments = ?, updated_at = NOW()
       WHERE id = ?
     `;
-
-    await pool.execute(updateQuery, [title, description, price, videoPath, ebookPath, assessmentPath, id]);
-
-    res.status(200).json({
-      message: "Module updated successfully",
-      module: {
-        id,
-        title,
-        description,
-        price,
-        video: videoPath,
-        ebook: ebookPath,
-        assessments: assessmentPath
+    pool.execute(updateQuery, [title, description, price, videoPath, ebookPath, assessmentPath, id], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
       }
+
+      // Fetch the updated module
+      pool.execute(selectQuery, [id], (err, updatedResult) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        // Return the updated module
+        res.status(200).json({
+          message: "Module updated successfully",
+          module: updatedResult[0]
+        });
+      });
     });
-  } catch (err) {
-    console.error('Error updating module:', err);
-    res.status(500).json({ error: 'Failed to update module' });
-  }
+  });
 });
 
 module.exports = router;

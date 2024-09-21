@@ -36,7 +36,7 @@ const Navbar = () => {
                 <NavLink to='/book' activeclassname='active'>
                     Réserver une séance
                 </NavLink>
-                <NavLink to='/event' activeclassname='active'>
+                <NavLink to='/events' activeclassname='active'>
                     Participer à un événement
                 </NavLink>
                 <NavLink to='/contact' activeclassname='active'>

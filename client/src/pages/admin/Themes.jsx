@@ -19,6 +19,7 @@ const Themes = () => {
     const [themes, setThemes] = useState([]);
     const [form, setForm] = useState()
     const [title, setTitle] = useState('')
+    const [price, setPrice] = useState('')
     const [description, setDescription] = useState('')
     const [image, setImage] = useState('');
     const [selectedImage, setSelectedImage] = useState(''); 
@@ -81,6 +82,7 @@ const Themes = () => {
     
         const formData = new FormData();
         formData.append('title', title); 
+        formData.append('price', parseFloat(price))
         formData.append('description', description);
         if (image) {
             formData.append('image', image);
@@ -134,6 +136,7 @@ const Themes = () => {
     const handleThemeClick = (theme) =>{
         setDescription(theme.description)
         setTitle(theme.title)
+        setPrice(theme.price)
         setForm(true)
         setEditing(true)
         setID(theme.id)
@@ -155,6 +158,7 @@ const Themes = () => {
                                     <StyledTableCell align="center">Titre</StyledTableCell>
                                     <StyledTableCell align="center">Description</StyledTableCell>
                                     <StyledTableCell align="center">Image</StyledTableCell>
+                                    <StyledTableCell align="center">Prix</StyledTableCell>
                                     <StyledTableCell align="center">Date de Creation</StyledTableCell>
                                 </TableRow>
                             </TableHead>
@@ -171,6 +175,7 @@ const Themes = () => {
                                                      onClick={(e) => handleImageClick(e, `${SERVER}${theme.image}`)}
                                                  />
                                             </StyledTableCell>
+                                            <StyledTableCell align="center">{theme.price} DT</StyledTableCell>
                                             <StyledTableCell align="center">{new Date(theme.created_at).toLocaleString('fr-FR', {
                                                                                                             weekday: 'long',
                                                                                                             year: 'numeric',
@@ -222,6 +227,19 @@ const Themes = () => {
                                     onChange={(e) => setDescription(e.target.value)}
                                     required
                                 ></textarea>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="description">Price</label>
+                                <input
+                                    id="price"
+                                    name="price"
+                                    placeholder="Enter the theme price"
+                                    type='text'
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    required
+                                />
                             </div>
 
                             <div className="form-group">

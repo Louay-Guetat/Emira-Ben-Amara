@@ -21,10 +21,10 @@ router.post('/setAppointment', upload.none(), (req, res) => {
         return res.status(400).json({ error: 'Some required attributes are missing.' });
     } else {
         const query = uid
-            ? 'INSERT INTO appointments (email, phone, desired_date, full_name, user_id) VALUES (?, ?, ?, ?, ?)'
-            : 'INSERT INTO appointments (email, phone, desired_date, full_name) VALUES (?, ?, ?, ?)';
+            ? 'INSERT INTO appointments (email, phone, desired_date, confirmed_date, full_name, user_id) VALUES (?, ?, ?, ?, ?, ?)'
+            : 'INSERT INTO appointments (email, phone, desired_date, confirmed_date, full_name) VALUES (?, ?, ?, ?, ?)';
 
-        const params = uid ? [email, phone, desired_date, name, uid] : [email, phone, desired_date, name];
+        const params = uid ? [email, phone, desired_date, desired_date, name, uid] : [email, phone, desired_date, desired_date, name];
         
         pool.execute(query, params, (err, result) => {
             if (err) {
