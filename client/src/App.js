@@ -14,6 +14,7 @@ import Events from './pages/admin/Events';
 import DisplayEvents from './pages/DisplayEvents';
 import Reserver from './pages/Reserver';
 import Complete from './payments/Success';
+import AppointmentPurchaseSuccess from './payments/AppointmentPurchaseSuccess';
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
 
         {/* Payment Redirection pages */}
         <Route path='/complete/:user_id/:theme_id' element={<Complete />} />
+        <Route path='/complete/:user_id/:start/:end' element={<AppointmentPurchaseSuccess />} />
       </Routes>
     </Router>
   );

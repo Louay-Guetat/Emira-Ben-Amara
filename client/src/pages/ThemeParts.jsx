@@ -90,7 +90,9 @@ const ThemeParts = ({theme}) =>{
                         <ol>
                             {themeParts.length > 0 && 
                             themeParts.map((themePart) => (
-                                <li key={themePart.id} onClick={() => setThemePart(themePart)}> {themePart.title}</li>
+                                <li key={themePart.id} onClick={() => { if (owned) setThemePart(themePart); }}>
+                                    {themePart.title}
+                                </li>
                             ))}
                         </ol>
                     </div>

@@ -4,7 +4,6 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list'; 
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,145 +11,115 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import ErrorBoundary from '../hooks/ErrorBoundary.jsx';
 import { SERVER } from "../config/config.js";
-import '../scss/pages/Reserver.scss'
+import '../scss/pages/Reserver.scss';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from '@mui/material';
 import useUser from "../hooks/useUser.jsx";
+import { loadStripe } from '@stripe/stripe-js';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCcStripe } from '@fortawesome/free-brands-svg-icons';  // Import Stripe icon
 
 const Reserver = () => {
-    const calendarRef = useRef(null);
-    const [events, setEvents] = useState([]);
-    const [toastId, setToastId] = useState(null);
     const {user, loading} = useUser()
+    const calendarRef = useRef(null);
+    const [availability, setAvailability] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [paymentModal, setPaymentModal] = useState(false);
+    const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+    const [selectedTime, setSelectedTime] = useState({
+        start: '',
+        end: '',
+    });
 
-    const formatDate = (date) => new Date(date).toISOString();
-
-    const fetchEvents = async () => {
-        try {
-            // Fetching appointments
-            const responseAppointments = await axios.get(`${SERVER}/appointments/getAppointments`);
-            let appointments = [];
-    
-            if (responseAppointments.status === 200) {
-                const formattedAppointments = responseAppointments.data.map(event => ({
-                    ...event,
-                    confirmed_date: event.confirmed_date ? formatDate(event.confirmed_date) : null,
-                    type: 'appointment'  // Add a type to distinguish appointments
-                }));
-    
-                const { withDateAppointment } = formattedAppointments.reduce(
-                    (acc, item) => {
-                        if (item.confirmed_date) {
-                            acc.withDateAppointment.push(item);
-                        }
-                        return acc;
-                    },
-                    { withDateAppointment: [] }
-                );
-    
-                appointments = withDateAppointment;
-            }
-    
-            // Fetching events
-            const responseEvents = await axios.get(`${SERVER}/events/getEvents`);
-            let events = [];
-    
-            if (responseEvents.status === 200) {
-                events = responseEvents.data.events.map(event => ({
-                    ...event,
-                    type: 'event',  // Add a type to distinguish events
-                }));
-            }
-    
-            // Merging appointments and events
-            const mergedData = [...appointments, ...events];
-    
-            // Setting merged data to state
-            setEvents(mergedData);
-    
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    
+    // Fetch availability data when the component mounts
     useEffect(() => {
-        fetchEvents();
+        axios.get(`${SERVER}/appointments/getAvailability`)
+            .then(response => {
+                const availableSlots = response.data.dispo.map(slot => ({
+                    title: "Disponible",
+                    start: slot.start_date,
+                    end: slot.end_date,
+                    display: 'background',
+                    color: 'green',
+                    editable: false,
+                }));
+                setAvailability(availableSlots);
+            })
+            .catch(error => {
+                toast.error("Erreur lors du chargement des disponibilités");
+            });
     }, []);
 
-    const handleDateClick = (info) => {
-        const selectedDateStr = info.dateStr;
-        const formattedDate = new Date(selectedDateStr).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: false
-        });
-        console.log(formattedDate)
+    const handleDateSelect = (selectInfo) => {
+        const { start, end } = selectInfo;
 
-        const id = toast(<ConfirmToast time={formattedDate} onConfirm={() => confirmAppointment(formattedDate)} onCancel={cancelAppointment} />, {
-            position: "top-center",
-            autoClose: false,
-            closeOnClick: false,
-            draggable: false,
+        // Check if selected time overlaps with any available slots
+        const isAvailable = availability.some(slot => {
+            const slotStart = new Date(slot.start);
+            const slotEnd = new Date(slot.end);
+            return (start >= slotStart && end <= slotEnd);
         });
-        
-        setToastId(id); // Store the toast ID
+
+        if (isAvailable) {
+            setSelectedTime({
+                start: start.toISOString().slice(0, 16),  // Format for datetime-local input
+                end: end.toISOString().slice(0, 16),
+            });
+            setOpenModal(true);  // Open the modal to confirm or adjust times
+            toast.success(`Date sélectionnée: ${start.toLocaleString()} - ${end.toLocaleString()}`);
+        } else {
+            toast.error("La date sélectionnée n'est pas dans les plages disponibles.");
+        }
     };
 
-    const confirmAppointment = async (formattedDate) => {
-        if (!formattedDate) return;
-    
-        // Remove "at" and adjust the format
-        const cleanDate = formattedDate.replace(" at ", " ");
-        
-        // Create a Date object from the cleaned string
-        const dateObject = new Date(cleanDate);
-        
-        // Check if the dateObject is valid
-        if (isNaN(dateObject)) {
-            toast.error('Invalid date selected.');
-            return;
-        }
-    
-        // Format the date to the desired format
-        const dateToSend = dateObject.toISOString().slice(0, 19).replace('T', ' ');
-    
+    const handleSave = () => {
+        const start = new Date(selectedTime.start);
+        const end = new Date(selectedTime.end);
+        console.log("Saving appointment:", start, end);
+
+        // Close time adjustment modal and open payment modal
+        setOpenModal(false);
+        setPaymentModal(true);  // Show payment options modal
+    };
+
+    const handlePaymentClose = () => {
+        setPaymentModal(false);
+        calendarRef.current.getApi().unselect();
+    };
+
+    const handleClose = () => {
+        setOpenModal(false);
+        calendarRef.current.getApi().unselect();
+    };
+
+    const handleChange = (e) => {
+        setSelectedTime({
+            ...selectedTime,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const payWithStripe = async () =>{
         try {
-            const response = await axios.post(`${SERVER}/appointments/setAppointment`, {
-                email: user.email,
-                phone: user.phone,
-                name: user.username,
-                uid: user.id,
-                desired_date: dateToSend, // Send the correctly formatted date to the server
+            const formattedStartTime = new Date(selectedTime.start).toLocaleString();
+            const formattedEndTime = new Date(selectedTime.end).toLocaleString();
+            const response = await axios.post(`${SERVER}/stripe/appointmentCheckout`, {
+                user,
+                start: formattedStartTime,
+                end: formattedEndTime
             });
+            const { sessionId } = response.data;
     
-            if (response.status === 200) {
-                toast.success('Appointment confirmed successfully!');
-                fetchEvents();
-            } else {
-                toast.error('Failed to confirm appointment.');
+            const stripe = await stripePromise;
+            const { error } = await stripe.redirectToCheckout({ sessionId });
+    
+            if (error) {
+                console.error('Error during checkout:', error);
             }
         } catch (error) {
             console.log(error);
-            toast.error('Error confirming appointment.');
         }
-    };
-    
-
-    const cancelAppointment = () => {
-        toast.dismiss(toastId); // Close the confirm toast
-        toast.info('Appointment not confirmed.');
-    };
-
-    const ConfirmToast = ({ time, onConfirm, onCancel }) => (
-        <div>
-            <p>Do you want to confirm the appointment for "{time}"?</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <button onClick={onConfirm} style={{ marginRight: 10 }}>Yes</button>
-                <button onClick={onCancel}>No</button>
-            </div>
-        </div>
-    );
+    }
 
     return (
         <Layout>
@@ -158,40 +127,86 @@ const Reserver = () => {
                 <DndProvider backend={HTML5Backend}>
                     <div className="reserver">
                         <ToastContainer />
-                        <h1> Réserver Votre Place Dés Maintenant </h1>
-                        <span> Choisissez La date Qui vous convient, Je serai Disponible.</span>
-                        <div className='main'>
-                            <div id="calendar-container">
+                        <h1>Réserver Votre Place Dès Maintenant</h1>
+                        <span>Choisissez La date Qui vous convient, Je serai Disponible.</span>
+                        <div className="calendar-container">
                             <FullCalendar
                                 ref={calendarRef}
-                                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-                                initialView='timeGridWeek'
+                                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                                 initialDate={new Date()}
-                                validRange={{ start: new Date() }} // Restrict to today and future dates
-                                hiddenDays={[0, 6]} // Hide Sundays (0) and Saturdays (6)
+                                validRange={{ start: new Date() }}
+                                hiddenDays={[0, 6]}  
+                                initialView="timeGridWeek"
                                 headerToolbar={{
                                     left: 'prev,next today',
                                     center: 'title',
-                                    right: 'timeGridWeek,timeGridDay',
+                                    right: 'timeGridWeek,timeGridDay'
                                 }}
-                                editable={false}
-                                eventResizableFromStart={false}
-                                eventDurationEditable={false}
                                 selectable={true}
-                                droppable={false}
-                                dateClick={handleDateClick}
-                                events={events.map(event => ({
-                                    id: event.email ? 'appoint' + event.id : 'event' + event.id,
-                                    title: event.date_event ? event.name : 'Réserver',
-                                    start: event.confirmed_date ? event.confirmed_date : event.date_event,
-                                    backgroundColor: event.confirmed_date || event.date_event ? 'red' : 'green',
-                                }))}
+                                events={availability}
+                                select={handleDateSelect}
                                 slotMinTime='08:00:00'
                                 slotMaxTime='20:00:00'
+                                allDaySlot={false}
                                 slotLabelFormat={{ hour: 'numeric', minute: '2-digit', hour12: false }}
                             />
-                            </div>
                         </div>
+                        {/* Modal for adjusting time */}
+                        <Dialog open={openModal} onClose={handleClose}>
+                            <DialogTitle>Adjust Time Range</DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    label="Start Time"
+                                    type="datetime-local"
+                                    name="start"
+                                    value={selectedTime.start}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                                <TextField
+                                    label="End Time"
+                                    type="datetime-local"
+                                    name="end"
+                                    value={selectedTime.end}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                    style={{ marginTop: 20 }}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Cancel</Button>
+                                <Button onClick={handleSave} color="primary" variant="contained">Save</Button>
+                            </DialogActions>
+                        </Dialog>
+
+                        {/* Payment options modal */}
+                        <Dialog open={paymentModal} onClose={handlePaymentClose}>
+                            <DialogTitle>Choose Payment Option</DialogTitle>
+                            <DialogContent>
+                                <Typography>How would you like to proceed with payment?</Typography>
+                            </DialogContent>
+                            <DialogActions style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'50px'}}>
+                                <Button 
+                                    color="primary" 
+                                    variant="contained" 
+                                    onClick={() => payWithStripe()}>
+                                    <FontAwesomeIcon icon={faCcStripe} size="2xl" />
+                                </Button>
+                                <Button 
+                                    color="primary" 
+                                    variant="contained" 
+                                    onClick={() => {
+                                        const formattedStartTime = new Date(selectedTime.start).toLocaleString();
+                                        const formattedEndTime = new Date(selectedTime.end).toLocaleString();
+                                        const message = `I want to pay via bank transfer for an appointment at the date and time I chose: ${formattedStartTime} to ${formattedEndTime}.`;
+                                        window.open(`https://wa.me/+21655160398?text=${encodeURIComponent(message)}`, '_blank');
+                                    }}>
+                                    <WhatsAppIcon style={{ fontSize: 28 }} />
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </div>
                 </DndProvider>
             </ErrorBoundary>

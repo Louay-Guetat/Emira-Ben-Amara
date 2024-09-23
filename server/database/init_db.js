@@ -86,13 +86,11 @@ const createUserModules_purchasesTable =
 const createAppointmentTable = `
 CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(255) NOT NULL,
-    full_name VARCHAR(30) NOT NULL,
-    desired_date DATETIME NOT NULL,
-    confirmed_date DATETIME,
     user_id INT NULL,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL,
     appointement_link VARCHAR(255) UNIQUE,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );`;
@@ -105,6 +103,13 @@ CREATE TABLE IF NOT EXISTS events(
     price FLOAT NOT NULL,
     date_event DATETIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);`;
+
+const createDisponibiliteTable = `
+CREATE TABLE IF NOT EXISTS disponibilite(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL
 );`;
 
 db.connect((err) => {
@@ -218,4 +223,12 @@ db.connect((err) => {
 
         console.log('UserModules Purchase Table created or already exists.');
     });    
+    db.query(createDisponibiliteTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Events table:', err);
+            return;
+        }
+
+        console.log('Disponibilite Table created or already exists.');
+    });  
 });
