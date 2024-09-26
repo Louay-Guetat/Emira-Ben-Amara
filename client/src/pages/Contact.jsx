@@ -48,7 +48,6 @@ const Contact = () => {
     return (
         <Layout>
             <div className="contact">
-                <img src={Emira} alt='Emira' />
                 <h1>Contactez-moi</h1>
                 <span>Je suis à votre écoute...</span>
                 <div className='contact-main'>

@@ -12,16 +12,36 @@
     justify-content: center;
     flex-direction: column;
     width: 100%;
-    margin: 1% 0%;
+    background-image: url('../../utils/1.jpeg');
+    background-size: cover;
+    background-position: center center;
+    min-height: 100vh;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.35);
+        z-index: 0;
+    }
+
     h1{
+        z-index: 1;
+        color: white;
         margin: 5px 0px;
+        margin-top: 7.5%;
     }
 
     span{
-        color: $secondary-color;
+        z-index: 1;
+        color: white;
     }
 
     .calendar-container{
+        z-index: 1;
         margin-top: 5%;
         width: 90%;
         display: flex;

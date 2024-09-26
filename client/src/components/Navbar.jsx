@@ -11,20 +11,26 @@ const Navbar = () => {
     const { user, loading } = useUser();    
     const navigate = useNavigate()
 
-    const logout = async() =>{
+    const logout = async () => {
         try {
             await axios.post(`${SERVER}/auth/logout`, {}, { withCredentials: true });
-            navigate('/')
-          } catch (error) {
+            
+            if (window.location.pathname === '/') {
+                window.location.reload();
+            } else {
+                navigate('/');
+            }
+        } catch (error) {
             console.error('Error logging out:', error);
             throw error;
-          }
-    }
+        }
+    };
+    
 
     return (
         <div className='navbar'>
             <div className='logo'>
-                <img src='' alt='logo' />
+                Emira Ben Amara
             </div>
             <div className='links'>
                 <NavLink to='/' activeclassname='active'>
@@ -62,8 +68,8 @@ const Navbar = () => {
                         </div>
                     ) : (
                         <div className='auth'>
-                            <button onClick={() => navigate('/SignIn')}> Sign In </button>
-                            <button onClick={() => navigate('/SignUp')}> Sign Up </button>
+                            <button onClick={() => navigate('/SignIn')}> Connexion </button>
+                            <button onClick={() => navigate('/SignUp')}> S'inscrire </button>
                         </div>
                     )
                 }

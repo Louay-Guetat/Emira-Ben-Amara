@@ -12,7 +12,7 @@ const SignIn = () => {
     const navigate = useNavigate();
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [pwd, setPwd] = useState('');
-    
+    const [error, setError] = useState('')
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -33,7 +33,7 @@ const SignIn = () => {
             }
         } catch (error) {
             console.error(error);
-            alert("An error occurred during login");
+            setError('Vérifier vos coordonnées...')
         }
     };
 
@@ -45,14 +45,18 @@ const SignIn = () => {
         <Layout>
             <div className="SignIn">
                 <form className="signin-form" onSubmit={handleSubmit}>
-                    <h2>Sign In</h2>
+                    <h1>Sign In</h1>
+                    <span> {error} </span>
                     <div className="form-group">
                         <label htmlFor="usernameOrEmail">Username or Email</label>
                         <input
                             type="text"
                             id="usernameOrEmail"
                             value={usernameOrEmail}
-                            onChange={(e) => setUsernameOrEmail(e.target.value)}
+                            onChange={(e) => {
+                                setUsernameOrEmail(e.target.value)
+                                setError('')
+                            }}
                             placeholder="Enter your username or email"
                         />
                     </div>
@@ -62,11 +66,14 @@ const SignIn = () => {
                             type="password"
                             id="pwd"
                             value={pwd}
-                            onChange={(e) => setPwd(e.target.value)}
+                            onChange={(e) => {
+                                setPwd(e.target.value)
+                                setError('')
+                            }}
                             placeholder="Enter your password"
                         />
                     </div>
-                    <button type="submit" className="signin-btn">Sign In</button>
+                    <button type="submit" className="signin-btn">Connexion</button>
                 </form>
             </div>
         </Layout>

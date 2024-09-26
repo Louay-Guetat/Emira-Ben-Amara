@@ -47,7 +47,6 @@ router.post('/appointmentCheckout', async (req, res) => {
         const { user, start, end } = req.body;
         console.log(user, start, end);
         
-        // Corrected validation check
         if (!user || !start || !end || !user.id) {
             return res.status(400).send('Invalid data');
         }
@@ -55,16 +54,16 @@ router.post('/appointmentCheckout', async (req, res) => {
         // Calculate duration in minutes
         const startDate = new Date(start);
         const endDate = new Date(end);
-        const durationInMinutes = (endDate - startDate) / (1000 * 60); // Convert milliseconds to minutes
+        const durationInMinutes = (endDate - startDate) / (1000 * 60); 
         
         // Check for valid duration
-        if (durationInMinutes <= 0 || durationInMinutes % 30 !== 0) {
-            return res.status(400).send('Invalid appointment duration. It should be in increments of 30 minutes.');
+        if (durationInMinutes <= 0) {
+            return res.status(400).send('Invalid appointment duration. Duration must be greater than 0 minutes.');
         }
 
-        // Calculate price based on duration
-        const pricePer30Minutes = 30; // Price in euros
-        const totalPrice = (durationInMinutes / 30) * pricePer30Minutes; // Total price in euros
+        const validDuration = Math.floor(durationInMinutes / 30) * 30; 
+        const pricePer30Minutes = 30; 
+        const totalPrice = (validDuration / 30) * pricePer30Minutes;
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -86,7 +85,8 @@ router.post('/appointmentCheckout', async (req, res) => {
             metadata: { 
                 user_id: user.id,
                 start: start,
-                end: end
+                end: end,
+                validDuration: validDuration
             }
         });
 
