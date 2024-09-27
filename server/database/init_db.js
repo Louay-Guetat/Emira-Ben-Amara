@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    phone VARCHAR(8),
+    phone VARCHAR(100),
     role VARCHAR(8),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`;

@@ -1,0 +1,48 @@
+$primary-color: #3498db;
+$secondary-color: #2c3e50;
+$button-padding: 10px 15px;
+
+.viewer-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 2%;
+    h1 {
+        font-size: 1.5rem;
+        color: $secondary-color;
+        margin-bottom: 15px;
+    }
+
+    video {
+        display: flex;
+        width: 50%;
+        height: 512px;
+        border: none;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+    button {
+        background-color: $primary-color;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: $button-padding;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+
+        &:hover {
+            background-color: darken($primary-color, 10%);
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.5);
+        }
+    }
+}

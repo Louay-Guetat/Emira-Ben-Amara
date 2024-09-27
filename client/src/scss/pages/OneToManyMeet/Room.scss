@@ -1,0 +1,26 @@
+@import '../../variables';
+
+.room{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+
+    .users{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        gap: 10px;
+        .user-container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #141414;
+            width: 300px;
+            height: 300px;
+            border-radius: 30px;
+        }
+    }
+}

@@ -8,13 +8,14 @@ import ProtectedRoute from './hooks/ProtectedRoute';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import Themes from './pages/admin/Themes';
-import Visioconference from './pages/visioconference';
 import Contact from './pages/Contact';
 import Events from './pages/admin/Events';
 import DisplayEvents from './pages/DisplayEvents';
 import Reserver from './pages/Reserver';
 import Complete from './payments/Success';
 import AppointmentPurchaseSuccess from './payments/AppointmentPurchaseSuccess';
+import OneToOneMeet from './pages/OneToOneMeet';
+import Room from './pages/OneToManyMeet/Room';
 
 const App = () => {
   return (
@@ -38,9 +39,10 @@ const App = () => {
 
 
         {/* Visioconference routes */}
-        <Route path='/visioconference' element={<Visioconference />} />
+        <Route path='/Appointment' element={<OneToOneMeet />} />
+        <Route path='/visioconference/:roomId' element={<Room />} />
 
-        {/* Payment Redirection pages */}
+        {/* Payment Redirection pages */} 
         <Route path='/complete/:user_id/:theme_id' element={<Complete />} />
         <Route path='/complete/:user_id/:start/:end' element={<AppointmentPurchaseSuccess />} />
       </Routes>

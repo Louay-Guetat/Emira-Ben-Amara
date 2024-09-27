@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-regular-svg-icons'; // Import the regular version of the user icon
 import { SERVER } from '../config/config';
 import axios from 'axios';
-import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { faGauge, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import useUser from '../hooks/useUser';
 
 const Navbar = () => {
@@ -26,6 +26,9 @@ const Navbar = () => {
         }
     };
     
+    const Dashboard = () =>{
+        navigate('/admin/dashboard')
+    }
 
     return (
         <div className='navbar'>
@@ -64,6 +67,7 @@ const Navbar = () => {
                     (
                         <div className='profile'>
                             <FontAwesomeIcon icon={faUser} size='xl' />
+                            {user.role === 'admin' ? (<button onClick={Dashboard}><FontAwesomeIcon icon={faGauge} size='2xl' color='white' /></button>) : null}
                             <button onClick={logout}> <FontAwesomeIcon icon={faRightToBracket} size='xl' /> </button>
                         </div>
                     ) : (

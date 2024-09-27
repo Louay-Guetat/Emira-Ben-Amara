@@ -14,14 +14,14 @@ import FiberManualRecordRoundedIcon from '@mui/icons-material/FiberManualRecordR
 import StopIcon from '@mui/icons-material/Stop';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import ChatIcon from '@mui/icons-material/Chat';
-import '../scss/pages/visioconference.scss';
+import '../scss/pages/OneToOneMeet.scss';
 import useUser from '../hooks/useUser';
 import process from 'process';
 window.process = process;
 
 const socket = io.connect("http://localhost:5000");
 
-function Visioconference() {
+function OneToOneMeet() {
   const { user, loading } = useUser();
   const [me, setMe] = useState("");
   const [stream, setStream] = useState();
@@ -342,4 +342,4 @@ function Visioconference() {
   }
 }
 
-export default Visioconference;
+export default OneToOneMeet;
