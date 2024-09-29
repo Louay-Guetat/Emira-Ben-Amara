@@ -4,15 +4,21 @@ const pool = require('../database/db');
 const multer = require('multer');
 const upload = multer(); // This will handle the incoming form data
 
-router.get('/getAppointments', (req,res) => {
-    const query = 'SELECT * from appointments ORDER BY desired_date ASC';
-    pool.execute(query, (err, results) =>{
-        if(err){
+router.get('/getAppointments', (req, res) => {
+    const query = `
+        SELECT a.*, u.username 
+        FROM appointments AS a
+        JOIN users AS u ON a.user_id = u.id 
+        ORDER BY a.created_at ASC
+    `;
+    
+    pool.execute(query, (err, results) => {
+        if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.status(200).json(results)
-    })
-})
+        res.status(200).json(results);
+    });
+});
 
 router.post('/setAppointment', upload.none(), (req, res) => {
     const { email, phone, name, desired_date, uid } = req.body; // FormData fields will be available in req.body

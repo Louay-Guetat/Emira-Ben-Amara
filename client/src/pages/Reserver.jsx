@@ -18,11 +18,15 @@ import { loadStripe } from '@stripe/stripe-js';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCcStripe } from '@fortawesome/free-brands-svg-icons';  // Import Stripe icon
+import { useNavigate } from "react-router-dom";
 
 const Reserver = () => {
     const {user, loading} = useUser()
+    const navigate = useNavigate()
     const calendarRef = useRef(null);
     const [availability, setAvailability] = useState([]);
+    const [appointements, setAppointements] = useState([]);
+    const [events, setEvents] = useState([])
     const [openModal, setOpenModal] = useState(false);
     const [paymentModal, setPaymentModal] = useState(false);
     const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
@@ -33,28 +37,67 @@ const Reserver = () => {
 
     // Fetch availability data when the component mounts
     useEffect(() => {
-        axios.get(`${SERVER}/appointments/getAvailability`)
-            .then(response => {
-                const availableSlots = response.data.dispo.map(slot => ({
-                    title: "Disponible",
-                    start: slot.start_date,
-                    end: slot.end_date,
-                    display: 'background',
-                    color: 'green',
-                    editable: false,
-                }));
-                setAvailability(availableSlots);
-            })
-            .catch(error => {
-                toast.error("Erreur lors du chargement des disponibilités");
-            });
+        const fetchAvailability = async () => {
+            try {
+                const response = await axios.get(`${SERVER}/appointments/getAvailability`);
+                if (response.status === 200) {
+                    setAvailability(response.data.dispo);
+                    console.log(response.data.dispo);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        const fetchEvents = async () => {
+            try {
+                const response = await axios.get(`${SERVER}/events/getEvents`);
+                if (response.status === 200) {
+                    const formattedEvents = response.data.events.map(event => {
+                        // If the event has only a date and no specific time, format it as an all-day event.
+                        if (event.date_event) {
+                            return {
+                                ...event,
+                                title: event.name,
+                                start: event.date_event,
+                                end: event.date_event,
+                                backgroundColor: 'orange',
+                            };
+                        } else {
+                            return event;
+                        }
+                    });
+                    setEvents(formattedEvents);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        const fetchApp = async () => {
+            try {
+                const response = await axios.get(`${SERVER}/appointments/getAppointments`);
+                if (response.status === 200) {
+                    const formattedAppoinements = response.data.map(event => ({
+                        ...event,
+                    }));
+
+                    setAppointements(formattedAppoinements);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchAvailability();
+        fetchApp();
+        fetchEvents();
     }, []);
 
     const handleDateSelect = (selectInfo) => {
         const { start, end } = selectInfo;
-
         // Check if selected time overlaps with any available slots
-        const isAvailable = availability.some(slot => {
+        const isAvailable = availabilitySegments.some(slot => {
             const slotStart = new Date(slot.start);
             const slotEnd = new Date(slot.end);
             return (start >= slotStart && end <= slotEnd);
@@ -121,6 +164,84 @@ const Reserver = () => {
         }
     }
 
+        // Helper function to create availability segments
+        const createAvailabilitySegments = (availability, appointments) => {
+            const segments = [];
+    
+            // Iterate over each availability
+            availability.forEach(avail => {
+                let availStart = new Date(avail.start_date);
+                let availEnd = new Date(avail.end_date);
+    
+                // Iterate over each appointment
+                appointments.forEach(appointment => {
+                    let appStart = new Date(appointment.start_date);
+                    let appEnd = new Date(appointment.end_date);
+    
+                    // Check if the appointment overlaps with the availability
+                    if (appStart < availEnd && appEnd > availStart) {
+                        // If there's time before the appointment, create a segment
+                        if (availStart < appStart) {
+                            segments.push({
+                                id: `avail-${avail.id}-before-${appointment.id}`,
+                                title: 'Available',
+                                start: availStart.toISOString(),
+                                end: appStart.toISOString(),
+                                backgroundColor: 'green',
+                                overlap: false,
+                                display: 'background',
+                                color: 'green',
+                                editable: false,
+                            });
+                        }
+                        
+                        // Update the availability start time to the end of the appointment
+                        if (availEnd > appEnd) {
+                            availStart = appEnd; // Continue from the end of the appointment
+                        } else {
+                            availStart = availEnd; // No availability left
+                        }
+                    }
+                });
+    
+                // If there's remaining availability after the last appointment
+                if (availStart < availEnd) {
+                    segments.push({
+                        id: `avail-${avail.id}-after`,
+                        title: 'Available',
+                        start: availStart.toISOString(),
+                        end: availEnd.toISOString(),
+                        backgroundColor: 'green',
+                        overlap: false,
+                        display: 'background',
+                        color: 'green',
+                        editable: false,
+                    });
+                }
+            });
+    
+            return segments;
+        };
+
+        const handleEventClick = (info) => {
+            if (info.event.extendedProps.type === 'formattedEvent') {
+                navigate('/events')
+            }
+        };
+
+        const formattedEvents = events.map(event => ({
+            id: event.id,
+            title: 'Evénement: ' + event.title,
+            start: event.start,
+            end: event.end,
+            allDay: event.allDay || false,
+            backgroundColor: event.backgroundColor || 'blue',
+            type: 'formattedEvent', // Add a custom property to identify these events
+        }));        
+
+        // Transform availability events into segments
+        const availabilitySegments = [...createAvailabilitySegments(availability, appointements), ...formattedEvents];
+
     return (
         <Layout>
             <ErrorBoundary>
@@ -143,11 +264,12 @@ const Reserver = () => {
                                     right: 'timeGridWeek,timeGridDay'
                                 }}
                                 selectable={true}
-                                events={availability}
+                                events={availabilitySegments}
                                 select={handleDateSelect}
                                 slotMinTime='08:00:00'
                                 slotMaxTime='20:00:00'
                                 allDaySlot={false}
+                                eventClick={handleEventClick}
                                 slotLabelFormat={{ hour: 'numeric', minute: '2-digit', hour12: false }}
                             />
                         </div>

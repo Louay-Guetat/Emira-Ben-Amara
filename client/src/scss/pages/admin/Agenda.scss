@@ -60,7 +60,7 @@
             background-color: $secondary-color;
             color: $main-color;
             border-radius: 5px;
-            width: 80%;
+            width: 103%;
             margin: 10px 0px;
             cursor: pointer;
             color: black;
@@ -70,6 +70,7 @@
             
             &:hover {
                 background-color: var(--fc-accent-color-dark); // Use the manually defined darker color
+                width: 100%;
             }
 
             button{
@@ -100,8 +101,12 @@
           background-color: $main-color;
           border-radius: 10px;
           border: 1px solid var(--fc-border-color);
+          .fc-event {
+            display: flex;
+            align-items: center;
+            width: 100%;
+          }
         }
       }
     }
   }
-  

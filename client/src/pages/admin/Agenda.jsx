@@ -12,6 +12,8 @@ import ErrorBoundary from '../../hooks/ErrorBoundary.jsx';
 import '../../scss/pages/admin/Agenda.scss'
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import dayjs from 'dayjs';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css'; // Optional: Add Tippy.js styles
 
 const Agenda = () => {
     const calendarRef = useRef(null);
@@ -30,76 +32,81 @@ const Agenda = () => {
                 const response = await axios.get(`${SERVER}/appointments/getAvailability`);
                 if (response.status === 200) {
                     setAvailability(response.data.dispo);
-                    console.log(response.data.dispo);
                 }
             } catch (err) {
                 console.log(err);
             }
         };
-
-        const fetchEvents = async () => {
+    
+        const fetchApp = async () => {
             try {
                 const response = await axios.get(`${SERVER}/appointments/getAppointments`);
                 if (response.status === 200) {
-                    const formattedEvents = response.data.map(event => ({
+                    const formattedAppoinements = response.data.map(event => ({
                         ...event,
-                        desired_date: new Date(event.desired_date).toISOString(),
                     }));
-
-                    const { withDateAppointment, withoutDateAppointment } = formattedEvents.reduce(
-                        (acc, item) => {
-                            if (item.confirmed_date) {
-                                acc.withDateAppointment.push(item);
-                            } else {
-                                acc.withoutDateAppointment.push(item);
-                            }
-                            return acc;
-                        },
-                        { withDateAppointment: [], withoutDateAppointment: [] }
-                    );
-
-                    setAppointements(withDateAppointment);
-                    setEvents(withoutDateAppointment);
+                    setAppointements(formattedAppoinements);
                 }
             } catch (error) {
                 console.log(error);
             }
         };
-
+    
+        const fetchEvents = async () => {
+            try {
+                const response = await axios.get(`${SERVER}/events/getEvents`);
+                if (response.status === 200) {
+                    const formattedEvents = response.data.events.map(event => {
+                        // If the event has only a date and no specific time, format it as an all-day event.
+                        if (event.date_event) {
+                            return {
+                                ...event,
+                                title: event.name,
+                                start: event.date_event,
+                                end: event.date_event,
+                                backgroundColor: 'orange',
+                            };
+                        } else {
+                            return event;
+                        }
+                    });
+                    setEvents(formattedEvents);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+    
         fetchAvailability();
+        fetchApp();
         fetchEvents();
-    }, []);
+    }, []);    
 
     const saveAvailability = async (start, end) => {
         try {
-            // Ensure start and end are in the proper MySQL datetime format (YYYY-MM-DD HH:MM:SS)
             const formatDateForMySQL = (date) => {
                 return date.toLocaleString('sv-SE').replace('T', ' ');
             };
-    
+
             const startFormatted = formatDateForMySQL(new Date(start));
             const endFormatted = formatDateForMySQL(new Date(end));
-    
+
             const response = await axios.post(`${SERVER}/appointments/saveAvailability`, {
                 start: startFormatted,
                 end: endFormatted,
             });
-    
+
             if (response.status === 200) {
                 toast.success("Availability saved successfully!");
-    
-                // Create a new availability object
+
                 const newAvailability = {
-                    id: response.data.id, // Assuming the server responds with the new ID
+                    id: response.data.id,
                     title: 'Available',
                     start_date: startFormatted,
                     end_date: endFormatted,
                 };
-    
-                // Update the availability state directly
+
                 setAvailability((prevAvailability) => [...prevAvailability, newAvailability]);
-    
-                // Update combined events directly
                 setEvents((prevEvents) => [
                     ...prevEvents,
                     {
@@ -107,7 +114,7 @@ const Agenda = () => {
                         title: 'Available',
                         start: newAvailability.start_date,
                         end: newAvailability.end_date,
-                        backgroundColor: 'green', // For available slots
+                        backgroundColor: 'green',
                     }
                 ]);
             }
@@ -115,12 +122,11 @@ const Agenda = () => {
             console.error('Error saving availability:', error);
             toast.error("Failed to save availability.");
         }
-    };    
+    };
 
     const handleDateSelect = (selectInfo) => {
         const { start, end } = selectInfo;
 
-        // Open the modal to adjust the time
         setSelectedTime({
             start: dayjs(start).format('YYYY-MM-DDTHH:mm'),
             end: dayjs(end).format('YYYY-MM-DDTHH:mm'),
@@ -129,7 +135,6 @@ const Agenda = () => {
     };
 
     const handleSave = () => {
-        // Convert back to Date format
         const start = new Date(selectedTime.start);
         const end = new Date(selectedTime.end);
 
@@ -150,21 +155,87 @@ const Agenda = () => {
         });
     };
 
-    const combinedEvents = [
-        ...appointements.map(event => ({
-            id: event.id,
-            title: event.full_name,
-            start: event.confirmed_date,
-            backgroundColor: 'red',
-        })),
-        ...availability.map(avail => ({
-            id: avail.id,
-            title: 'Available',
-            start: avail.start_date,
-            end: avail.end_date,
-            backgroundColor: 'green',
-        }))
-    ];
+    const createAvailabilitySegments = (availability, appointments) => {
+        const segments = [];
+
+        availability.forEach(avail => {
+            let availStart = new Date(avail.start_date);
+            let availEnd = new Date(avail.end_date);
+
+            appointments.forEach(appointment => {
+                let appStart = new Date(appointment.start_date);
+                let appEnd = new Date(appointment.end_date);
+
+                if (appStart < availEnd && appEnd > availStart) {
+                    if (availStart < appStart) {
+                        segments.push({
+                            id: `avail-${avail.id}-before-${appointment.id}`,
+                            title: 'Available',
+                            start: availStart.toISOString(),
+                            end: appStart.toISOString(),
+                            overlap: false,
+                            display: 'background',
+                            color: 'green',
+                            editable: false,
+                        });
+                    }
+
+                    if (availEnd > appEnd) {
+                        availStart = appEnd;
+                    } else {
+                        availStart = availEnd;
+                    }
+                }
+            });
+
+            if (availStart < availEnd) {
+                segments.push({
+                    id: `avail-${avail.id}-after`,
+                    title: 'Available',
+                    start: availStart.toISOString(),
+                    end: availEnd.toISOString(),
+                    overlap: false,
+                    display: 'background',
+                    color: 'green',
+                    editable: false,
+                });
+            }
+        });
+
+        return segments;
+    };
+
+    const appointmentEvents = appointements.map(appointment => ({
+        id: appointment.id,
+        title: appointment.username,
+        start: appointment.start_date,
+        end: appointment.end_date,
+        backgroundColor: 'red',
+        overlap: true,
+    }));
+    
+    const availabilitySegments = createAvailabilitySegments(availability, appointements);
+    
+    const formattedEvents = events.map(event => ({
+        id: event.id,
+        title: event.title,
+        start: event.start,
+        end: event.end,
+        allDay: event.allDay || false,
+        backgroundColor: event.backgroundColor || 'blue',
+    }));
+    
+    const combinedEvents = [...appointmentEvents, ...availabilitySegments, ...formattedEvents];
+
+    const handleEventClick = (info) => {
+        // Initialize Tippy.js with appointment details
+        tippy(info.el, {
+            content: `Appointment with: ${info.event.title} <br /> Start: ${dayjs(info.event.start).format('YYYY-MM-DD HH:mm')} <br /> End: ${dayjs(info.event.end).format('YYYY-MM-DD HH:mm')}`,
+            allowHTML: true,
+            placement: 'top',
+            trigger: 'click',
+        });
+    };
 
     return (
         <AdminLayout>
@@ -186,13 +257,14 @@ const Agenda = () => {
                                     center: 'title',
                                     right: 'dayGridMonth,timeGridWeek,timeGridDay', 
                                 }}
-                                editable={true}
+                                editable={false}
                                 selectable={true}
                                 select={handleDateSelect}
                                 events={combinedEvents}
                                 slotMinTime='08:00:00'
                                 slotMaxTime='20:00:00'
                                 slotLabelFormat={{ hour: 'numeric', minute: '2-digit', hour12: false }}
+                                eventClick={handleEventClick} // Add this line
                             />
                         </div>
 

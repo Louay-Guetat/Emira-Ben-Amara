@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import "react-datepicker/dist/react-datepicker.css"; // Import the styles for the datepicker
+import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuoteRight} from '@fortawesome/free-solid-svg-icons';
 import AdminLayout from '../../Layouts/AdminLayout';

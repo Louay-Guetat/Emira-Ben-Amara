@@ -6,6 +6,14 @@
     align-items: center;
     justify-content: center;
 
+    h1{
+        color: $secondary-color;
+    }
+
+    span{
+        color: black;
+    }
+
     p{
         display: flex;
         align-items: center;
@@ -14,6 +22,7 @@
         width: 80%;
         border: 2px solid $main-color;
         font-size: 17px;
+        color: black;
     }
     .get-appointement{
         display: flex;
