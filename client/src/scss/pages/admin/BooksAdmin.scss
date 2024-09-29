@@ -1,0 +1,94 @@
+@import '../../variables';
+
+.books-admin{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    width: 100%;
+    flex-direction: column;
+
+    form{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        .text-inputs{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5%;
+            width: 50%;
+            margin: 2% 0%;
+            input{
+                padding: 12px 20px;
+                width: 75%;
+                font-size: 16px;
+                border: 1px solid $main-color;
+                border-radius: 25px;
+            }
+        }
+        
+        textarea{
+            width: 75%;
+            height: 20vh;
+            padding: 12px 20px;
+            font-size: 16px;
+            resize: vertical;
+            border: 1px solid $main-color;
+        }
+
+        .files-input{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5%;
+            width: 50%;
+            margin: 2% 0%;
+            input{
+                color: black;
+                border: 1px solid $main-color;
+            }
+        }
+
+        button{
+            background-color: beige;
+            border: none;
+            padding: 10px 50px;
+            color: black;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 1s ease;
+            &:hover{
+                background-color: $secondary-color;
+                color: white;
+            }
+        }
+    }
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+
+    label{
+        color: black;
+        font-size: 20px;
+        margin-bottom: 2%;
+    }
+}
+
+#description-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+
+    label{
+        color: black;
+        font-size: 20px;
+        margin-bottom: 2%;
+    }
+}

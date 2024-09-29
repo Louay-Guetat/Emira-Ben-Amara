@@ -112,6 +112,49 @@ CREATE TABLE IF NOT EXISTS disponibilite(
     end_date DATETIME NOT NULL
 );`;
 
+const createBlogsTable = `
+CREATE TABLE IF NOT EXISTS blogs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    view INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`;
+
+const createSectionsTable = `
+CREATE TABLE IF NOT EXISTS sections (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    blog_id INT NOT NULL,
+    text TEXT NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE
+);`
+
+const createBooksTable = `
+CREATE TABLE IF NOT EXISTS Books (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    book VARCHAR(255) NOT NULL,
+    book_preview VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`
+
+const createUserBooks_purchasesTable = 
+`CREATE TABLE IF NOT EXISTS usersBooks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_book_purchase_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_book_purchase_book FOREIGN KEY (book_id) REFERENCES Books(id) ON DELETE CASCADE,
+    UNIQUE (user_id, book_id)
+);`
+
 db.connect((err) => {
     if (err) {
         console.error('Error connecting to the database:', err);
@@ -208,7 +251,7 @@ db.connect((err) => {
 
     db.query(createUserThemes_purchasesTable, (err, results) => {
         if (err) {
-            console.error('Error creating Events table:', err);
+            console.error('Error creating v table:', err);
             return;
         }
 
@@ -217,7 +260,7 @@ db.connect((err) => {
 
     db.query(createUserModules_purchasesTable, (err, results) => {
         if (err) {
-            console.error('Error creating Events table:', err);
+            console.error('Error creating UserModules table:', err);
             return;
         }
 
@@ -225,10 +268,44 @@ db.connect((err) => {
     });    
     db.query(createDisponibiliteTable, (err, results) => {
         if (err) {
-            console.error('Error creating Events table:', err);
+            console.error('Error creating Disponibilite table:', err);
             return;
         }
 
         console.log('Disponibilite Table created or already exists.');
+    });  
+    db.query(createBlogsTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Blogs table:', err);
+            return;
+        }
+
+        console.log('Blogs Table created or already exists.');
+    });  
+    db.query(createSectionsTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Sections table:', err);
+            return;
+        }
+
+        console.log('Sections Table created or already exists.');
+    });  
+
+    db.query(createBooksTable, (err, results) => {
+        if (err) {
+            console.error('Error creating Books table:', err);
+            return;
+        }
+
+        console.log('Books Table created or already exists.');
+    });  
+
+    db.query(createUserBooks_purchasesTable, (err, results) => {
+        if (err) {
+            console.error('Error creating UsersBooks table:', err);
+            return;
+        }
+
+        console.log('UsersBooks Table created or already exists.');
     });  
 });

@@ -2,6 +2,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { SERVER } from '../config/config';
 import { useState, useEffect } from 'react';
+import '../scss/success.scss'
+import Layout from '../Layouts/Layout';
 
 const AppointmentPurchaseSuccess = () => {
     const { user_id, start, end } = useParams();
@@ -31,11 +33,17 @@ const AppointmentPurchaseSuccess = () => {
     }, [1]); // Dependencies array to re-run the effect when params change
 
     return (
-        <div>
-            <h1>Payment Complete!</h1>
-            <p>Thank you for your purchase.</p>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </div>
+        <Layout>
+            <div className='payment-success'>
+                <div className="div-wallpaper"></div>
+                <div className="success-message">
+                    <h1>Paiement fait avec success!</h1>
+                    <p>Merci Pour votre confiance.</p>
+                    <p> Soyez à l'heure de votre rendez vous s'il vous plaît. </p>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                </div>
+            </div>
+        </Layout>
     );
 };
 

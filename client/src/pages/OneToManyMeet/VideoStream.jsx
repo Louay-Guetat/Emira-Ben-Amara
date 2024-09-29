@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../scss/pages/OneToManyMeet/VideoStream.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVideo, faVideoSlash, faMicrophone, faMicrophoneSlash, faDesktop, faRecordVinyl } from '@fortawesome/free-solid-svg-icons';
+import { faVideo, faVideoSlash, faMicrophone, faMicrophoneSlash, faDesktop, faRecordVinyl, faUsers, faComments, faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
 
-const VideoStream = ({ user }) => {
+const VideoStream = ({ user, toggleChat, toggleUserList }) => {
     const videoRef = useRef(null);
     const [peer, setPeer] = useState(null);
     const [cameraEnabled, setCameraEnabled] = useState(true);
@@ -13,7 +14,8 @@ const VideoStream = ({ user }) => {
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [recording, setRecording] = useState(false);
     const [cameraStream, setCameraStream] = useState(null);
-    const [meatingStart, setMeatingStart] = useState(false)
+    const [meetingStart, setMeetingStart] = useState(false)
+    const navigate = useNavigate()
 
     const init = async () => {
         try {
@@ -24,7 +26,7 @@ const VideoStream = ({ user }) => {
             setCameraStream(stream);
             const newPeer = createPeer(stream);
             setPeer(newPeer);
-            setMeatingStart(true)
+            setMeetingStart(true)
         } catch (error) {
             console.error("Error accessing media devices.", error);
         }
@@ -174,9 +176,21 @@ const VideoStream = ({ user }) => {
         }
     };    
 
+    const endCall = () => {
+        if (peer) {
+            peer.close();
+            setPeer(null);
+        }
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop()); 
+            setCameraStream(null);
+            navigate('/')
+        }
+    };    
+
     return (
         <div className="container">
-            {!meatingStart ? (<button onClick={init}> start meeting </button>) : null} 
+            {!meetingStart ? (<button onClick={init}> start meeting </button>) : null} 
             <video ref={videoRef} autoPlay playsInline />
             <div className="controls">
                 <button onClick={toggleCamera}>
@@ -185,12 +199,22 @@ const VideoStream = ({ user }) => {
                 <button onClick={toggleMic}>
                     <FontAwesomeIcon icon={micEnabled ? faMicrophone : faMicrophoneSlash} />
                 </button>
-                <button onClick={!screenSharing ? shareScreen : null}>
+                <button onClick={!screenSharing ? shareScreen : null} disabled={screenSharing}>
                     <FontAwesomeIcon icon={faDesktop} />
                 </button>
                 <button onClick={recording ? stopRecording : startRecording}>
-                    <FontAwesomeIcon icon={recording ? faRecordVinyl : faRecordVinyl} />
+                    {recording ? <FontAwesomeIcon icon={faRecordVinyl} fade style={{color: "#ff1a1a",}} /> : <FontAwesomeIcon icon={faRecordVinyl} /> } 
                 </button>
+                <button onClick={toggleUserList}>
+                    <FontAwesomeIcon icon={faUsers} /> {/* Button to open user list */}
+                </button>
+                <button onClick={toggleChat}>
+                    <FontAwesomeIcon icon={faComments} /> {/* Button to open chat */}
+                </button>
+                {meetingStart ? 
+                    (<button onClick={endCall} style={{backgroundColor: 'red'}}>
+                        <FontAwesomeIcon icon={faPhoneSlash} color='white' />
+                    </button>) : null }
             </div>
         </div>
     );

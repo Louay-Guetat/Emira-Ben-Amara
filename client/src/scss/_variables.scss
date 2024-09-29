@@ -30,11 +30,29 @@ $default-font-color: white;
     src: url('./fonts/HelveticaWorld-Regular.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'GreatVibes';
+    src: url('./fonts/GreatVibes-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Aileron';
+    src: url('./fonts/Aileron-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Cardo';
+    src: url('./fonts/Cardo-Regular.ttf') format('truetype');
+}
+
 $brittany: Brittany-Signature;
 $Spartan: Spartan;
 $KingredModern: KingredModern;
 $Zing: Zing;
 $Helvetica: Helvetica;
+$GreatVibes: GreatVibes;
+$Aileron: Aileron;
+$Cardo: Cardo;
 
 h1{
     font-family: $KingredModern;

@@ -49,15 +49,15 @@ const Navbar = () => {
                     Participer à un événement
                 </NavLink>
                 <NavLink to='/contact' activeclassname='active'>
-                    Contactez-Nous
+                    Contact
                 </NavLink>
-                <NavLink to='/about' activeclassname='active'>
-                    à propos de nous
+                <NavLink to='/aboutEmira' activeclassname='active'>
+                    à propos
                 </NavLink>
-                <NavLink to='/books' activeclassname='active'>
+                <NavLink to='/Books' activeclassname='active'>
                     Livres
-                </NavLink>
-                <NavLink to='/blog' activeclassname='active'>
+                </NavLink> 
+                <NavLink to='/Blogs' activeclassname='active'>
                     Blog
                 </NavLink>
             </div>

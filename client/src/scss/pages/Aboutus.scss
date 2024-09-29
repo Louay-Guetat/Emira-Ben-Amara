@@ -1,0 +1,111 @@
+@import '../variables';
+
+.AboutUs{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    .div-wallpaper{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background-image: url('../../utils/11.jpeg');
+        background-size: cover;
+        background-position: center center;
+        min-height: 40vh;
+        max-height: 40vh;
+        width: 100%;
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.35);
+            z-index: 0;
+        }
+    }
+
+    .main-container{
+        background-color: white;
+        z-index: 1;
+        display: flex;
+        width: 100%;
+        flex: 100%;
+        padding-top: 5%;
+        
+        .images-group{
+            flex: 40%;
+            width: 40%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            border-right: 0.1rem solid black;
+            margin-top: 1%;
+            img{
+                width: 50%;
+                margin-left: 20%;
+
+                &:first-child{
+                    margin-bottom: 10%;
+                    margin-top: -5%;
+                }
+
+                &:last-child{
+                    margin-top: 10%;
+                    margin-bottom: -5%;
+                }
+            }
+        }
+        .informations-group{
+            flex: 60%;
+            width: 60%;
+            display: flex;
+            padding-left: 2.5%;
+            justify-content: center;
+            flex-direction: column;
+
+            h1{
+                color: #7a6d4e;
+                font-size: 64px;
+                margin: 2.5% 0px;
+            }
+
+            h3{
+                color: #7a6d4e;
+                font-weight: lighter;
+                margin: 2.5% 0%;
+                font-size: 40px;
+                font-family: $GreatVibes;
+            }
+
+            span{
+                color: black;
+                width: 72.5%;
+            }
+
+            .about-contact{
+                display: flex;
+                flex-direction: column;
+                margin: 5% 0%;
+                margin-left: -2.5%;
+
+                .social-media{
+                    display: flex;
+                    margin-top: 3%;
+                    gap: 0;
+                    cursor: pointer;
+                    img{
+                        display: flex;
+                        align-items: center;
+                        width: 60%;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}

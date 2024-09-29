@@ -163,7 +163,7 @@ const Module = ({ themePartID, themePartTitle }) =>{
     return(
         <div className="part-sequences">
             <div className="partSequences-table">
-                <h1> Les Modules de <span style={{color:'black'}}>{themePartTitle}</span> </h1>
+                <h1> Les Modules de <br></br><span style={{color:'black'}}>{themePartTitle}</span> </h1>
                 <TableContainer component={Paper}>
                 <Table aria-label="customized table">
                     <TableHead>

@@ -28,7 +28,7 @@ router.post('/checkout', async (req, res) => {
             ],
             mode: 'payment',
             success_url: `http://localhost:3000/complete/${user_id}/${theme.id}`,
-            cancel_url: 'http://localhost:3000/cancel',
+            cancel_url: 'http://localhost:3000/courses',
             metadata: { 
                 user_id: user_id, // Store user_id in session metadata
                 theme_id: theme.id // Store theme_id in session metadata
@@ -45,7 +45,6 @@ router.post('/checkout', async (req, res) => {
 router.post('/appointmentCheckout', async (req, res) => {
     try {
         const { user, start, end } = req.body;
-        console.log(user, start, end);
         
         if (!user || !start || !end || !user.id) {
             return res.status(400).send('Invalid data');
@@ -81,7 +80,7 @@ router.post('/appointmentCheckout', async (req, res) => {
             ],
             mode: 'payment',
             success_url: `http://localhost:3000/complete/${user.id}/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
-            cancel_url: 'http://localhost:3000/cancel',
+            cancel_url: 'http://localhost:3000/book',
             metadata: { 
                 user_id: user.id,
                 start: start,
@@ -125,7 +124,6 @@ router.post('/storeThemePurchase', (req, res) => {
 
 router.post('/storeAppointmentPurchase', (req, res) => {
     const { user_id, start, end } = req.body;
-    console.log({ user_id, start, end });
 
     if (!user_id || !start || !end) {
         return res.status(400).json({ error: "Missing user_id or datetimes" });
@@ -152,6 +150,73 @@ router.post('/storeAppointmentPurchase', (req, res) => {
 
     // Execute the insert/update query
     pool.execute(insertPurchaseQuery, [user_id, formattedStart, formattedEnd], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        // Return success message
+        res.status(200).json({
+            message: 'Purchase recorded successfully'
+        });
+    });
+});
+
+
+router.post('/buyBook', async (req, res) => {
+    try {
+        const { book, user_id } = req.body;
+        if (!book || !book.name || !book.price || !user_id || !book.id) {
+            return res.status(400).send('Invalid data');
+        }
+
+        // Round the price to the nearest integer (in cents)
+        const priceInCents = Math.round(book.price * 100);
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'eur',
+                        product_data: {
+                            name: book.name,
+                        },
+                        unit_amount: priceInCents, // Use the rounded price
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `http://localhost:3000/BookPurshareComplete/${user_id}/${book.id}`,
+            cancel_url: 'http://localhost:3000/Books',
+            metadata: { 
+                user_id: user_id, // Store user_id in session metadata
+                book_id: book.id // Store book_id in session metadata
+            }
+        });
+
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server error');
+    }
+});
+
+router.post('/storeBookPurchase', (req, res) => {
+    const { user_id, book_id } = req.body;
+
+    if (!user_id || !book_id) {
+        return res.status(400).json({ error: "Missing user_id or book_id" });
+    }
+
+    const insertPurchaseQuery = `
+        INSERT INTO usersBooks (user_id, book_id)
+        VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE purchased_at = CURRENT_TIMESTAMP
+    `;
+
+    // Execute the insert/update query
+    pool.execute(insertPurchaseQuery, [user_id, book_id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }

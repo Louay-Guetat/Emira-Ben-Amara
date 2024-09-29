@@ -14,6 +14,8 @@ const appointmentsRoutes = require('./routes/appointments');
 const contactRoutes = require('./routes/contact')
 const eventsRoutes = require('./routes/events')
 const stripeRoutes = require('./routes/stripe')
+const blogsRoutes = require('./routes/blogs')
+const booksRoutes = require('./routes/books')
 
 // Initialize Express app and HTTP server
 const app = express();
@@ -41,6 +43,8 @@ app.use(
 app.use('/uploads/themes', express.static(path.join(__dirname, 'uploads/themes')));
 app.use('/uploads/themeParts', express.static(path.join(__dirname, 'uploads/themeParts')));
 app.use('/uploads/modules', express.static(path.join(__dirname, 'uploads/modules')));
+app.use('/uploads/blogs', express.static(path.join(__dirname, 'uploads/blogs')));
+app.use('/uploads/books', express.static(path.join(__dirname, 'uploads/books')));
 
 // Serve static files in production (React client build)
 if (process.env.NODE_ENV === 'production') {
@@ -59,11 +63,16 @@ app.use('/appointments', appointmentsRoutes);
 app.use('/contact', contactRoutes)
 app.use('/events', eventsRoutes)
 app.use('/stripe', stripeRoutes)
+app.use('/blogs', blogsRoutes)
+app.use('/books', booksRoutes)
 
 initializeOneToOne(server);
 app.post("/consumer", oneToMany.handleConsumer);
 app.post("/broadcast", oneToMany.handleBroadcast);
+app.post("/closeConnection", oneToMany.closePeerConnection)
 app.get('/connected-users', oneToMany.getConnectedUsers);
+app.post('/sendMessage', oneToMany.sendMessage)
+
 
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

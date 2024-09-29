@@ -22,6 +22,12 @@ const AdminNavbar = () =>{
                 <NavLink to='/admin/events'>
                     Events
                 </NavLink>
+                <NavLink to='/admin/blogs'>
+                    Blogs
+                </NavLink>
+                <NavLink to='/admin/books'>
+                    Livres
+                </NavLink>
             </div>
         </div>
     )

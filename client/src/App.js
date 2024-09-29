@@ -16,6 +16,12 @@ import Complete from './payments/Success';
 import AppointmentPurchaseSuccess from './payments/AppointmentPurchaseSuccess';
 import OneToOneMeet from './pages/OneToOneMeet';
 import Room from './pages/OneToManyMeet/Room';
+import AboutUs from './pages/AboutUs';
+import Blogs from './pages/Blogs';
+import Books from './pages/Books';
+import BlogsAdmin from './pages/admin/BlogsAdmin';
+import BooksAdmin from './pages/admin/BooksAdmin';
+import BookPurchaseSuccess from './payments/BookPurchaseSuccess';
 
 const App = () => {
   return (
@@ -26,6 +32,9 @@ const App = () => {
         <Route path='/book' element={<Reserver />} />
         <Route path='/events' element={<DisplayEvents />} />
         <Route path='/contact' element={<Contact />} />
+        <Route path='/aboutEmira' element={<AboutUs />} />
+        <Route path='/Books' element={<Books />} />
+        <Route path='/Blogs' element={<Blogs />} />
 
         {/* Auth links */}
         <Route path='/signin' element={<SignIn />} />
@@ -36,6 +45,8 @@ const App = () => {
         <Route path='/admin/agenda' element={<ProtectedRoute element={Agenda} />} />
         <Route path='/admin/themes' element={<ProtectedRoute element={Themes} />} />
         <Route path='/admin/events' element={<Events />} />
+        <Route path='/admin/blogs' element={<BlogsAdmin />} />
+        <Route path='/admin/books' element={<BooksAdmin />} />
 
 
         {/* Visioconference routes */}
@@ -45,6 +56,8 @@ const App = () => {
         {/* Payment Redirection pages */} 
         <Route path='/complete/:user_id/:theme_id' element={<Complete />} />
         <Route path='/complete/:user_id/:start/:end' element={<AppointmentPurchaseSuccess />} />
+        <Route path='/BookPurshareComplete/:user_id/:book_id' element={<BookPurchaseSuccess />} />
+
       </Routes>
     </Router>
   );

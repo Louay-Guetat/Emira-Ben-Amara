@@ -151,7 +151,7 @@ const handleModalClose = () => {
     <>
       <div className="themesPart">
         <div className="themesPart-table">
-          <h1> Les parties de <span style={{color:'black'}}>{themeTitle}</span> </h1>
+          <h1> Les parties de <br></br><span style={{color:'black'}}>{themeTitle}</span> </h1>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 640 }} aria-label="customized table">
               <TableHead>

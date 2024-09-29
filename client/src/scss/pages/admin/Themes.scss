@@ -144,6 +144,12 @@
         flex-direction: column;
         align-items: center;
         width: 50%;
+
+        h1{
+            text-align: center;
+            color: #a78262;
+        }
+
         .MuiTableContainer-root {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -276,6 +282,12 @@
         flex-direction: column;
         align-items: center;
         width: 50%;
+
+        h1{
+            text-align: center;
+            color: #a78262;
+        }
+        
         .MuiTableContainer-root {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;

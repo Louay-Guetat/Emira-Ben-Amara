@@ -1,0 +1,270 @@
+@import '../../variables';
+
+.blogs {
+    display: flex;
+    align-items: center;
+    margin: 2% 0%;
+    width: 100%;
+
+    .blogs-table {
+        margin: 0% 2%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 50%;
+        .MuiTableContainer-root {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .MuiTableHead-root {
+            background-color: #333; // Customize the header background color
+            color: #fff; // Customize header text color
+
+            .MuiTableCell-root {
+                font-weight: bold;
+                padding: 16px;
+                font-size: 16px;
+            }
+        }
+
+        .MuiTableBody-root {
+            .MuiTableRow-root {
+                transition: background-color 0.3s ease;
+
+                &:nth-of-type(odd) {
+                    background-color: #f9f9f9; // Lighter background for odd rows
+                }
+
+                &:hover {
+                    background-color: #a78262 !important; // Darker hover color
+                    color: white;
+                }
+
+                .MuiTableCell-root {
+                    padding: 12px;
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .add-blog-button{
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            margin-top: 5%;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            &:hover {
+                background-color: #555; // Darken the button on hover
+            }
+        }
+    }
+
+    .add-form {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40%;
+        margin: 0% 2%;
+    
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 50%;
+    
+            .form-group {
+                display: flex;
+                flex-direction: column;
+    
+                label {
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                }
+    
+                input, textarea {
+                    padding: 10px;
+                    font-size: 14px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    width: 100%;
+                    &:focus {
+                        outline: none;
+                        border-color: #a78262;
+                    }
+                }
+    
+                textarea {
+                    resize: vertical;
+                }
+            }
+    
+            .form-actions {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 10px;
+                gap: 10px;
+                button {
+                    background-color: #333;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+    
+                    &:hover {
+                        background-color: #555;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.blogSections{
+    display: flex;
+    align-items: center;
+    margin: 2% 0%;
+    width: 100%;
+
+    .blogSections-table{
+        margin: 0% 2%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 50%;
+
+        h1{
+            text-align: center;
+            color: #a78262;
+        }
+        .MuiTableContainer-root {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .MuiTableHead-root {
+            background-color: #333; // Customize the header background color
+            color: #fff; // Customize header text color
+
+            .MuiTableCell-root {
+                font-weight: bold;
+                padding: 16px;
+                font-size: 16px;
+            }
+        }
+
+        .MuiTableBody-root {
+            .MuiTableRow-root {
+                transition: background-color 0.3s ease;
+
+                &:nth-of-type(odd) {
+                    background-color: #f9f9f9; // Lighter background for odd rows
+                }
+
+                &:hover {
+                    background-color: #a78262 !important; // Darker hover color
+                    color: white;
+                }
+
+                .MuiTableCell-root {
+                    padding: 12px;
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .add-blogSection-button{
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            margin-top: 5%;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            &:hover {
+                background-color: #555; // Darken the button on hover
+            }
+        }   
+    }
+
+    .add-form {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40%;
+        margin: 2% 2%;
+    
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 50%;
+    
+            .form-group {
+                display: flex;
+                flex-direction: column;
+    
+                label {
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                }
+    
+                input, textarea {
+                    padding: 10px;
+                    font-size: 14px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    width: 100%;
+                    &:focus {
+                        outline: none;
+                        border-color: #a78262;
+                    }
+                }
+    
+                textarea {
+                    resize: vertical;
+                }
+            }
+    
+            .form-actions {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 10px;
+                gap: 10px;
+                button {
+                    background-color: #333;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+    
+                    &:hover {
+                        background-color: #555;
+                    }
+                }
+            }
+        }
+    }
+}
