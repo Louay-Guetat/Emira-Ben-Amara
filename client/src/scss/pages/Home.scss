@@ -109,7 +109,11 @@
             justify-content: center;
             width: 90%;
             height: 120px;
-        }
+            box-shadow: 
+            0px 10px 10px rgba(0, 0, 0, 0.1),     // Light shadow for the bottom left
+            0px 10px 10px rgba(0, 0, 0, 0.1),     // Light shadow for the bottom right
+            0px 50px 30px rgba(0, 0, 0, 0.4);     // Darker shadow for the bottom center
+        }   
         
         .audio-waveform {
             display: flex;
@@ -233,8 +237,10 @@
 
                         #user-icon{
                             position: absolute;
-                            top: -10%;
-                            left: 15%;
+                            top: -15%;
+                            left: 10%;
+                            border-radius: 50%;
+                            width: 108px;
                         }
 
                         .stars{

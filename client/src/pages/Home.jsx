@@ -12,6 +12,7 @@ import star from '../utils/icons/star.png'
 import axios from 'axios';
 import { SERVER } from '../config/config';
 import Blogs from './Blogs';
+import temoi_image from '../utils/temoi.png';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -191,7 +192,7 @@ const Home = () => {
                                 </button>
                                 <div className="cards-container">
                                     <div className={`card previous-card ${direction}`}>
-                                        <img id='user-icon' src={facebook} />
+                                        <img id='user-icon' src={temoi_image} />
                                         <div className='stars'>
                                             <img src={star} />
                                             <img src={star} />   
@@ -204,7 +205,7 @@ const Home = () => {
                                     </div>
     
                                     <div className={`card current-card ${direction}`}>
-                                        <img id='user-icon' src={facebook} />
+                                        <img id='user-icon' src={temoi_image} />
                                         <div className='stars'>
                                             <img src={star} />
                                             <img src={star} />   
@@ -217,7 +218,7 @@ const Home = () => {
                                     </div>
     
                                     <div className={`card next-card ${direction}`}>
-                                        <img id='user-icon' src={facebook} />
+                                        <img id='user-icon' src={temoi_image} />
                                         <div className='stars'>
                                             <img src={star} />
                                             <img src={star} />   

@@ -149,13 +149,20 @@ const DisplayEvents = () => {
                                             backgroundSize: 'cover',
                                         }}
                                     >
-                                    <div className="countdown">
-                                        {!isCountdownFinished ? (
-                                            `${timeLeft[index]?.days}d ${timeLeft[index]?.hours}h ${timeLeft[index]?.minutes}m ${timeLeft[index]?.seconds}s`
+                                    {
+                                        timeLeft[index]?.days !== undefined && timeLeft[index]?.hours !== undefined && timeLeft[index]?.minutes !== undefined && timeLeft[index]?.seconds !== undefined ? (
+                                            <div className="countdown">
+                                                {!isCountdownFinished ? (
+                                                    `${timeLeft[index]?.days}d ${timeLeft[index]?.hours}h ${timeLeft[index]?.minutes}m ${timeLeft[index]?.seconds}s`
+                                                ) : (
+                                                    'Welcome'
+                                                )}
+                                            </div>
                                         ) : (
-                                            'Welcome'
-                                        )}
-                                    </div>
+                                            <div></div>
+                                        )
+                                    }
+                                    
                                     <h1>{evenement.name}</h1>
                                     <span>{evenement.description}</span>
                                     {!isOwned && evenement.price !== 0 ? (
