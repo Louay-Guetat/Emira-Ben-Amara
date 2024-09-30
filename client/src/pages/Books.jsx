@@ -28,6 +28,7 @@ const Books = () =>{
     const [book, setBook] = useState();
     const {user, loading} = useUser()
     const [paymentModal, setPaymentModal] = useState(false); // State for payment modal
+    const [ownedBooks, setOwnedBooks] = useState([])
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -42,6 +43,25 @@ const Books = () =>{
         };
         fetchBooks();
     }, []);
+
+    useEffect(() =>{
+        const fetchOwnedBooks = async () =>{
+            try{
+                const response = await axios.get(`${SERVER}/stripe/getOwnedBooks`, {
+                    params : {
+                        user_id : user.id
+                    }
+                })
+
+                if (response.status === 200){
+                    setOwnedBooks(response.data.books)
+                }
+            }catch(err){
+                console.log(err)
+            }
+        }
+        fetchOwnedBooks()
+    }, [user])
 
     const filteredBooks = books.filter((book) =>
         book.title.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -168,7 +188,9 @@ const Books = () =>{
                                                     <p key={index}>{paragraph}</p>
                                                 ))}</div>
                                                 <div className='buttons'>
-                                                    <button onClick={() => buyBook(book)}> Acheter Maintenant  </button>
+                                                    {!ownedBooks?.some((ownedBook) => ownedBook.id === book.id) && (
+                                                        <button onClick={() => buyBook(book)}>Acheter Maintenant</button>
+                                                    )}  
                                                     <button onClick={() => downloadPreview(book.book_preview)}> Télécharger un Extrait Gratuit  </button>
                                                     <button onClick={() => shareOn(book)}> Partager </button>
                                                 </div>

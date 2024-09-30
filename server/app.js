@@ -22,6 +22,7 @@ const app = express();
 const server = http.createServer(app);
 
 const oneToMany = require('./stream/OneToMany');
+
 const initializeOneToOne = require('./stream/OneToOne');
 
 // Set the port
@@ -72,7 +73,6 @@ app.post("/broadcast", oneToMany.handleBroadcast);
 app.post("/closeConnection", oneToMany.closePeerConnection)
 app.get('/connected-users', oneToMany.getConnectedUsers);
 app.post('/sendMessage', oneToMany.sendMessage)
-
 
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

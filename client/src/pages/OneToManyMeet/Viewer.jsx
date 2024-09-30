@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faPhoneSlash, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
 
-const Viewer = ({ user, toggleChat, toggleUserList }) => {
+const Viewer = ({ user, toggleChat, toggleUserList, streamID }) => {
     const videoRef = useRef(null);
     const peerRef = useRef(null); // Keep reference to peer connection
     const [connected, setConnected] = useState(false);
@@ -38,6 +38,7 @@ const Viewer = ({ user, toggleChat, toggleUserList }) => {
         await peer.setLocalDescription(offer);
         const payload = { 
             sdp: peer.localDescription,
+            streamId: streamID,
             user: {
                 user_id: user.id,
                 username: user.username,
@@ -45,9 +46,13 @@ const Viewer = ({ user, toggleChat, toggleUserList }) => {
             }
         };
 
-        const { data } = await axios.post('/consumer', payload);
-        const desc = new RTCSessionDescription(data.sdp);
-        peer.setRemoteDescription(desc).catch(e => console.log(e));
+        const response = await axios.post('/consumer', payload);
+        if (response.status === 205){
+            navigate('/')
+        }else{
+            const desc = new RTCSessionDescription(response.data.sdp);
+            peer.setRemoteDescription(desc).catch(e => console.log(e));
+        }
     }
 
     function handleTrackEvent(e) {

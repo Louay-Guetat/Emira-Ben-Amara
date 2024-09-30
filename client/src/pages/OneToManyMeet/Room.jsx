@@ -4,8 +4,10 @@ import VideoStream from "./VideoStream";
 import Viewer from "./Viewer";
 import axios from 'axios';
 import '../../scss/pages/OneToManyMeet/Room.scss';
+import { useParams } from 'react-router-dom';
 
 const Room = () => {
+    const { roomId } = useParams()
     const { user } = useUser();
     const [connectedUsers, setConnectedUsers] = useState([]);
     const [showUserList, setShowUserList] = useState(false);
@@ -95,9 +97,9 @@ const Room = () => {
         <div className='room'>
             <div className='main'>
                 {user && user.role === 'admin' ? (
-                    <VideoStream user={user} connectedUsers={connectedUsers} toggleChat={toggleChat} toggleUserList={toggleUserList} />
+                    <VideoStream user={user} connectedUsers={connectedUsers} toggleChat={toggleChat} toggleUserList={toggleUserList} streamID={roomId} />
                 ) : user && user.role !== 'admin' ? (
-                    <Viewer user={user} connectedUsers={connectedUsers} toggleChat={toggleChat} toggleUserList={toggleUserList} />
+                    <Viewer user={user} connectedUsers={connectedUsers} toggleChat={toggleChat} toggleUserList={toggleUserList} streamID={roomId} />
                 ) : null}
 
                 <div className='users'>

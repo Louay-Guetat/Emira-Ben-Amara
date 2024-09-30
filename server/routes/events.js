@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database/db');
+const { v4: uuidv4 } = require('uuid');
 
 router.get('/getEvents', (req, res) => {
     pool.execute(
@@ -24,8 +25,8 @@ router.post('/createEvent', (req,res) =>{
     if (!date_event){
         return res.status(400).json({ error: "L'événement doit avoir une date." });
     }
-    const insertQuery = "INSERT INTO events (name, description, price, date_event) VALUES (?, ?, ?, ?)";
-    pool.execute(insertQuery, [nom, description, price, date_event], (err, result) => {
+    const insertQuery = "INSERT INTO events (name, description, price, date_event, event_link) VALUES (?, ?, ?, ?, ?)";
+    pool.execute(insertQuery, [nom, description, price, date_event, uuidv4()], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }

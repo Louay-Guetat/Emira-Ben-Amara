@@ -4,11 +4,30 @@ import axios from "axios";
 import { SERVER } from "../config/config";
 import '../scss/pages/DisplayEvents.scss';
 import eventImage from '../utils/1.jpeg';
+import { useNavigate } from "react-router-dom";
+import useUser from "../hooks/useUser";
+import { loadStripe } from '@stripe/stripe-js';
+import { faCcStripe } from '@fortawesome/free-brands-svg-icons'; 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    Typography,
+} from '@mui/material'; // Ensure you have MUI installed
 
 const DisplayEvents = () => {
     const [events, setEvents] = useState([]);
+    const navigate = useNavigate();
+    const {user, loading} = useUser()
+    const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+    const [paymentModal, setPaymentModal] = useState(false); // State for payment modal
+    const [ownedEvents, setOwnedEvents] = useState()
 
-    useEffect(() => {
+    useEffect(() => {   
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(`${SERVER}/events/getEvents`);
@@ -22,6 +41,25 @@ const DisplayEvents = () => {
 
         fetchEvents();
     }, []);
+
+    useEffect(() =>{
+        const fetchOwnedEvents = async () =>{
+            try{
+                const response = await axios.get(`${SERVER}/stripe/getOwnedEvents`, {
+                    params : {
+                        user_id : user.id
+                    }
+                })
+
+                if (response.status === 200){
+                    setOwnedEvents(response.data.events)
+                }
+            }catch(err){
+                console.log(err)
+            }
+        }
+        fetchOwnedEvents()
+    }, [user])
 
     const calculateTimeLeft = (date_event) => {
         const eventDate = new Date(date_event);
@@ -52,6 +90,39 @@ const DisplayEvents = () => {
         return () => clearInterval(timer);
     }, [events]);
 
+    const BuyEventSetter = () => {
+        setPaymentModal(true); // Open the payment modal
+    };
+
+    const handlePaymentClose = () => {
+        setPaymentModal(false); // Close the modal
+    };
+
+    const BuyEvent = async (evenement) =>{
+        try {
+            const response = await axios.post(`${SERVER}/stripe/buyEvent`, {
+                event: {
+                    name: evenement.name,
+                    price: evenement.price,
+                    id: evenement.id,
+                },
+                user_id: user.id, 
+            });
+            const { sessionId } = response.data;
+
+            const stripe = await stripePromise;
+            const { error } = await stripe.redirectToCheckout({ sessionId });
+
+            if (error) {
+                console.error('Error during checkout:', error);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setPaymentModal(false); 
+        }
+    }
+
     return (
         <Layout>
             <div className="DisplayEvents">
@@ -65,6 +136,8 @@ const DisplayEvents = () => {
                                     timeLeft[index]?.hours === 0 &&
                                     timeLeft[index]?.minutes === 0 &&
                                     timeLeft[index]?.seconds === 0;
+                                
+                                const isOwned = ownedEvents?.some((ownedEvent) => ownedEvent.id === evenement.id);
 
                                 return (
                                     <div
@@ -76,25 +149,54 @@ const DisplayEvents = () => {
                                             backgroundSize: 'cover',
                                         }}
                                     >
-                                        <div className="countdown">
-                                            {!isCountdownFinished ? (
-                                                `${timeLeft[index]?.days}d ${timeLeft[index]?.hours}h ${timeLeft[index]?.minutes}m ${timeLeft[index]?.seconds}s`
-                                            ) : (
-                                                'Welcome'
-                                            )}
-                                        </div>
-                                        <h1>{evenement.name}</h1>
-                                        <span>{evenement.description}</span>
-                                        <div className="pay-event"> 
-                                            <span> Prix de L'événement </span>
-                                            <button> Payer </button>
-                                        </div>
-                                        <div className="participate-event">
-                                            <button disabled={!isCountdownFinished}>
-                                                Participer
-                                            </button>
-                                        </div>
+                                    <div className="countdown">
+                                        {!isCountdownFinished ? (
+                                            `${timeLeft[index]?.days}d ${timeLeft[index]?.hours}h ${timeLeft[index]?.minutes}m ${timeLeft[index]?.seconds}s`
+                                        ) : (
+                                            'Welcome'
+                                        )}
                                     </div>
+                                    <h1>{evenement.name}</h1>
+                                    <span>{evenement.description}</span>
+                                    {!isOwned && evenement.price !== 0 ? (
+                                        <div className="pay-event">
+                                            <span> Prix de L'événement <br /> {evenement.price} € </span>
+                                            <button onClick={BuyEventSetter}> Payer </button>
+                                        </div>
+                                    ) : (
+                                        evenement.price === 0 && (
+                                            <div className="pay-event">
+                                                <span> L'événement est <u>gratuit</u> <br /> soyez le Bienvenus. </span>
+                                            </div>
+                                        )
+                                    )}
+                                    <div className="participate-event">
+                                        <button onClick={() => navigate(`/visioconference/${evenement.event_link}`)} disabled={!isCountdownFinished}>
+                                            Participer
+                                        </button>
+                                    </div>
+                                    <Dialog open={paymentModal} onClose={handlePaymentClose}>
+                                        <DialogTitle>Choose Payment Option</DialogTitle>
+                                        <DialogContent>
+                                            <Typography>How would you like to proceed with payment?</Typography>
+                                        </DialogContent>
+                                        <DialogActions style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '50px' }}>
+                                            <Button color="primary" variant="contained" onClick={() => BuyEvent(evenement)}>
+                                                <FontAwesomeIcon icon={faCcStripe} size="2xl" />
+                                            </Button>
+                                            <Button 
+                                                color="primary" 
+                                                variant="contained" 
+                                                onClick={() => {
+                                                    const message = `I want to pay via bank transfer for the event: ${evenement.name}.`;
+                                                    window.open(`https://wa.me/+21655160398?text=${encodeURIComponent(message)}`, '_blank');
+                                                }}
+                                            >
+                                                <WhatsAppIcon style={{ fontSize: 28 }} />
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
+                                </div>
                                 );
                             })}
                         </div>

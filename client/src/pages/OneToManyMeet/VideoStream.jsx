@@ -5,7 +5,7 @@ import '../../scss/pages/OneToManyMeet/VideoStream.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVideo, faVideoSlash, faMicrophone, faMicrophoneSlash, faDesktop, faRecordVinyl, faUsers, faComments, faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
 
-const VideoStream = ({ user, toggleChat, toggleUserList }) => {
+const VideoStream = ({ user, toggleChat, toggleUserList, streamID }) => {
     const videoRef = useRef(null);
     const [peer, setPeer] = useState(null);
     const [cameraEnabled, setCameraEnabled] = useState(true);
@@ -20,13 +20,15 @@ const VideoStream = ({ user, toggleChat, toggleUserList }) => {
     const init = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-            }
-            setCameraStream(stream);
             const newPeer = createPeer(stream);
-            setPeer(newPeer);
-            setMeetingStart(true)
+            if (newPeer){
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+                setCameraStream(stream);
+                setPeer(newPeer);
+                setMeetingStart(true)
+            }
         } catch (error) {
             console.error("Error accessing media devices.", error);
         }
@@ -52,6 +54,7 @@ const VideoStream = ({ user, toggleChat, toggleUserList }) => {
             
             const payload = { 
                 sdp: peerConnection.localDescription,
+                streamId: streamID,
                 user: {
                     user_id : user.id,
                     username: user.username,
@@ -59,9 +62,14 @@ const VideoStream = ({ user, toggleChat, toggleUserList }) => {
                 }
             };
     
-            const { data } = await axios.post('/broadcast', payload);
-            const desc = new RTCSessionDescription(data.sdp);
-            await peerConnection.setRemoteDescription(desc);
+            const response = await axios.post('/broadcast', payload);
+            if (response.status === 205){
+                navigate('/')
+                return null;
+            }else{
+                const desc = new RTCSessionDescription(response.data.sdp);
+                await peerConnection.setRemoteDescription(desc);
+            }
         } catch (error) {
             console.error('Error during negotiation:', error);
         }

@@ -5,10 +5,9 @@ let senderStream;
 let peers = {};
 let connectedUsers = [];
 let chat = [];
-const MAX_USERS = 100;
+const MAX_USERS = 2;
 
 async function isStreamIdAllowed(streamId) {
-    // Replace this with your actual database query
     const allowedStreamIds = await getAllowedStreamIdsFromDatabase();
     return allowedStreamIds.includes(streamId);
 }
@@ -16,13 +15,13 @@ async function isStreamIdAllowed(streamId) {
 async function getAllowedStreamIdsFromDatabase() {
     return new Promise((resolve, reject) => {
         pool.execute(
-            "SELECT event_link FROM events ORDER BY date_event ASC LIMIT 1",
+            "SELECT appointement_link FROM appointments ORDER BY start_date ASC LIMIT 1",
             (err, result) => {
                 if (err) {
                     return reject(err);
                 }
                 if (result.length > 0) {
-                    resolve([result[0].event_link]);
+                    resolve([result[0].appointement_link]);
                 } else {
                     resolve([]);
                 }
@@ -31,10 +30,8 @@ async function getAllowedStreamIdsFromDatabase() {
     });
 }
 
-
 async function handleConsumer({ body }, res) {
     const user = body.user;
-
     // Check if the stream ID is allowed
     if (!(await isStreamIdAllowed(body.streamId))) {
         return res.status(205).json({ error: 'Stream ID not authorized' });

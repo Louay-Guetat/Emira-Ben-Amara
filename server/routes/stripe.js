@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require('../database/db')
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { format } = require('date-fns'); // You can install this library
+const { v4: uuidv4 } = require('uuid');
 
 router.post('/checkout', async (req, res) => {
     try {
@@ -31,7 +32,7 @@ router.post('/checkout', async (req, res) => {
             cancel_url: 'http://localhost:3000/courses',
             metadata: { 
                 user_id: user_id, // Store user_id in session metadata
-                theme_id: theme.id // Store theme_id in session metadata
+                event_id: theme.id // Store event_id in session metadata
             }
         });
 
@@ -143,13 +144,13 @@ router.post('/storeAppointmentPurchase', (req, res) => {
     const formattedEnd = format(endDate, 'yyyy-MM-dd HH:mm:ss');
 
     const insertPurchaseQuery = `
-        INSERT INTO appointments (user_id, start_date, end_date)
-        VALUES (?, ?, ?)
+        INSERT INTO appointments (user_id, start_date, end_date, appointement_link)
+        VALUES (?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE purchased_at = CURRENT_TIMESTAMP
     `;
 
     // Execute the insert/update query
-    pool.execute(insertPurchaseQuery, [user_id, formattedStart, formattedEnd], (err, result) => {
+    pool.execute(insertPurchaseQuery, [user_id, formattedStart, formattedEnd, uuidv4()], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -228,6 +229,69 @@ router.post('/storeBookPurchase', (req, res) => {
     });
 });
 
+router.post('/buyEvent', async (req, res) => {
+    try {
+        const { event, user_id } = req.body; // Extract event and user_id from request
+        if (!event || !event.name || !event.price || !user_id || !event.id) {
+            return res.status(400).send('Invalid data');
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'eur',
+                        product_data: {
+                            name: event.name,
+                        },
+                        unit_amount: event.price * 100,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `http://localhost:3000/eventSuccess/${user_id}/${event.id}`,
+            cancel_url: 'http://localhost:3000/events',
+            metadata: { 
+                user_id: user_id, // Store user_id in session metadata
+                event_id: event.id // Store event_id in session metadata
+            }
+        });
+
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server error');
+    }
+});
+
+router.post('/storeEventPurchase', (req, res) => {
+    const { user_id, event_id } = req.body;
+
+    if (!user_id || !event_id) {
+        return res.status(400).json({ error: "Missing user_id or event_id" });
+    }
+
+    const insertPurchaseQuery = `
+        INSERT INTO user_events_purchases (user_id, event_id)
+        VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE purchased_at = CURRENT_TIMESTAMP
+    `;
+
+    // Execute the insert/update query
+    pool.execute(insertPurchaseQuery, [user_id, event_id], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        // Return success message
+        res.status(200).json({
+            message: 'Purchase recorded successfully'
+        });
+    });
+});
+
 router.get('/getThemeOwned', (req, res) => {
     const { theme_id, user_id } = req.query;
     
@@ -250,5 +314,96 @@ router.get('/getThemeOwned', (req, res) => {
     );
 });
 
+router.get('/getAppoinements', (req, res) => {
+    const { user_id } = req.query;
+    
+    if (!user_id) {
+        return res.status(400).json({ error: 'userID is required' });
+    }
+
+    pool.execute(
+        "SELECT * FROM appointments WHERE user_id = ?",
+        [user_id],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Return true if the purchase exists, else return false
+            if (result.length >0 ){
+                res.status(200).json({ appointments: result });
+            }else{
+                res.status(200).json({ appointments: [] });
+            }
+        }
+    );
+});
+// Get Owned Events
+router.get('/getOwnedEvents', (req, res) => {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+        return res.status(400).json({ error: 'userID is required' });
+    }
+
+    pool.execute(
+        "SELECT event_id FROM user_events_purchases WHERE user_id = ?",
+        [user_id],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            if (result.length > 0) {
+                const eventIds = result.map(row => row.event_id);
+                
+                // Fetch event details based on extracted IDs
+                const eventsQuery = `SELECT * FROM events WHERE id IN (${eventIds.map(() => '?').join(', ')})`;
+                pool.execute(eventsQuery, eventIds, (err, eventsResult) => {
+                    if (err) {
+                        return res.status(500).json({ error: err.message });
+                    }
+                    res.status(200).json({ events: eventsResult });
+                });
+            } else {
+                res.status(200).json({ events: [] });
+            }
+        }
+    );
+});
+
+// Get Owned Books
+router.get('/getOwnedBooks', (req, res) => {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+        return res.status(400).json({ error: 'userID is required' });
+    }
+
+    pool.execute(
+        "SELECT book_id FROM usersBooks WHERE user_id = ?",
+        [user_id],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            if (result.length > 0) {
+                const bookIds = result.map(row => row.book_id);
+                
+                // Fetch book details based on extracted IDs
+                const booksQuery = `SELECT * FROM Books WHERE id IN (${bookIds.map(() => '?').join(', ')})`;
+                pool.execute(booksQuery, bookIds, (err, booksResult) => {
+                    if (err) {
+                        return res.status(500).json({ error: err.message });
+                    }
+                    res.status(200).json({ books: booksResult });
+                });
+            } else {
+                res.status(200).json({ books: [] });
+            }
+        }
+    );
+});
 
 module.exports = router;

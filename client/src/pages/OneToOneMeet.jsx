@@ -17,11 +17,14 @@ import ChatIcon from '@mui/icons-material/Chat';
 import '../scss/pages/OneToOneMeet.scss';
 import useUser from '../hooks/useUser';
 import process from 'process';
+import { useNavigate, useParams } from "react-router-dom";
 window.process = process;
 
 const socket = io.connect("http://localhost:5000");
 
 function OneToOneMeet() {
+  const navigate = useNavigate()
+  const { roomId } = useParams()
   const { user, loading } = useUser();
   const [me, setMe] = useState("");
   const [stream, setStream] = useState();
@@ -135,6 +138,8 @@ function OneToOneMeet() {
     if (recorder) {
       recorder.stop();
     }
+
+    navigate('/')
   };
 
   const toggleVideo = () => {

@@ -14,7 +14,6 @@ import DisplayEvents from './pages/DisplayEvents';
 import Reserver from './pages/Reserver';
 import Complete from './payments/Success';
 import AppointmentPurchaseSuccess from './payments/AppointmentPurchaseSuccess';
-import OneToOneMeet from './pages/OneToOneMeet';
 import Room from './pages/OneToManyMeet/Room';
 import AboutUs from './pages/AboutUs';
 import Blogs from './pages/Blogs';
@@ -22,6 +21,8 @@ import Books from './pages/Books';
 import BlogsAdmin from './pages/admin/BlogsAdmin';
 import BooksAdmin from './pages/admin/BooksAdmin';
 import BookPurchaseSuccess from './payments/BookPurchaseSuccess';
+import EventPurchase from './payments/EventPurchase';
+import OneToOneMeet from './pages/OneToOneMeet';
 
 const App = () => {
   return (
@@ -50,13 +51,14 @@ const App = () => {
 
 
         {/* Visioconference routes */}
-        <Route path='/Appointment' element={<OneToOneMeet />} />
+        <Route path='/Appointment/:roomId' element={<OneToOneMeet />} />
         <Route path='/visioconference/:roomId' element={<Room />} />
-
+        
         {/* Payment Redirection pages */} 
         <Route path='/complete/:user_id/:theme_id' element={<Complete />} />
         <Route path='/complete/:user_id/:start/:end' element={<AppointmentPurchaseSuccess />} />
         <Route path='/BookPurshareComplete/:user_id/:book_id' element={<BookPurchaseSuccess />} />
+        <Route path='/eventSuccess/:user_id/:event_id' element={<EventPurchase />} />
 
       </Routes>
     </Router>

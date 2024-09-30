@@ -72,15 +72,15 @@ const createUserThemes_purchasesTable =
     UNIQUE (user_id, theme_id)
 );`
 
-const createUserModules_purchasesTable = 
-`CREATE TABLE IF NOT EXISTS user_modules_purchases (
+const createUserEvents_purchasesTable = 
+`CREATE TABLE IF NOT EXISTS user_events_purchases (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    module_id INT NOT NULL,
+    event_id INT NOT NULL,
     purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user_module_purchase_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_user_module_purchase_module FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE CASCADE,
-    UNIQUE (user_id, module_id)
+    CONSTRAINT fk_user_event_purchase_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_event_purchase_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    UNIQUE (user_id, event_id)
 );`
 
 const createAppointmentTable = `
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     user_id INT NULL,
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
-    appointement_link VARCHAR(255) UNIQUE,
+    appointement_link VARCHAR(255) NOT NULL UNIQUE,
     purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS events(
     description VARCHAR(255), 
     price FLOAT NOT NULL,
     date_event DATETIME NOT NULL,
+    event_link VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );`;
 
@@ -273,13 +274,13 @@ db.connect((err) => {
         console.log('UserThemes Purchase Table created or already exists.');
     });    
 
-    db.query(createUserModules_purchasesTable, (err, results) => {
+    db.query(createUserEvents_purchasesTable, (err, results) => {
         if (err) {
-            console.error('Error creating UserModules table:', err);
+            console.error('Error creating UserEvents table:', err);
             return;
         }
 
-        console.log('UserModules Purchase Table created or already exists.');
+        console.log('UserEvents Purchase Table created or already exists.');
     });
 
     db.query(createDisponibiliteTable, (err, results) => {
