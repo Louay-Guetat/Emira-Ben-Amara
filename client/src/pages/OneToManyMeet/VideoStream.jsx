@@ -199,7 +199,7 @@ const VideoStream = ({ user, toggleChat, toggleUserList, streamID }) => {
     return (
         <div className="container">
             {!meetingStart ? (<button onClick={init}> start meeting </button>) : null} 
-            <video ref={videoRef} autoPlay playsInline />
+            <video ref={videoRef} autoPlay muted playsInline />
             <div className="controls">
                 <button onClick={toggleCamera}>
                     <FontAwesomeIcon icon={cameraEnabled ? faVideo : faVideoSlash} />

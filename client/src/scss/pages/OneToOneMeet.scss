@@ -6,84 +6,80 @@
     align-items: center;
     justify-content: center;
     background-color: $main-color;
-
-    .container{
+    .video-container {
+        position: relative;
+        width: 100%; // or a specific width like 800px
+        height: 600px; // or any desired height
         display: flex;
-        flex-direction: column;
+        gap: 10%;
+        justify-content: center;
         align-items: center;
-        .video-container{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10%;
-            .video{
-                display: flex;
-                align-items: center;
+        overflow: hidden; // Prevent overflow if video is larger than container
+      }
+      
+      .video-container video {
+        width: 100%; // Make video take full width of the container
+        height: 100%; // Make video take full height of the container
+        object-fit: cover; // Cover the container without distortion
+      }
+      
 
-                video{
-                    width: 512px;
-                    border-radius: 20px;
-                }
-            }
-        }
+    .myId{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1% 0%;
+    }
 
-        .myId{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 1% 0%;
-        }
+    .call-container{
 
-        .call-container{
+        .caller{
 
-            .caller{
-
-            }
-        }
-
-        .controls{
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            height: 10vh;
-            width: 100%;
-            background-color: black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
     }
 
-    .chat-section{
+    .controls{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        height: 10vh;
+        width: 100%;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.chat-section{
+    display: flex;
+    flex-direction: column;
+    height: 90vh;   
+    max-width: 300px;
+    background-color: lighten($color: #ffffff, $amount: 50%);
+    margin-left: auto;
+    margin-bottom: auto;
+
+    .chat-messages{
+        padding: 2px 0px;
         display: flex;
         flex-direction: column;
-        height: 90vh;   
-        max-width: 300px;
-        background-color: lighten($color: #ffffff, $amount: 50%);
-        margin-left: auto;
-        margin-bottom: auto;
+        width: 100%;
 
-        .chat-messages{
-            padding: 2px 0px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-
-            div{
-                margin: 5px 5px;
-            }
+        div{
+            margin: 5px 5px;
         }
+    }
 
-        .chat-input{
-            display: flex;
-            margin-top: auto;
+    .chat-input{
+        display: flex;
+        margin-top: auto;
+        width: 100%;
+        height: 6vh;
+        textarea{
             width: 100%;
-            height: 6vh;
-            textarea{
-                width: 100%;
-                padding: 10px;
-                resize: none;
-            }
+            padding: 10px;
+            resize: none;
         }
     }
 }
