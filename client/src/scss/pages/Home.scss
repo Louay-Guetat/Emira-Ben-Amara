@@ -32,7 +32,7 @@
         }
 
         h1 {
-            margin-top: 12%;
+            margin-top: 10%;
             text-align: center;
             width: 50%;
             color: white;
@@ -79,7 +79,7 @@
                 transition: transform 1.5s ease;
                 z-index: -1;
             }
-        
+            
             &:hover {
                 border-color: white;
         
@@ -114,6 +114,23 @@
             0px 10px 10px rgba(0, 0, 0, 0.1),     // Light shadow for the bottom right
             0px 50px 30px rgba(0, 0, 0, 0.4);     // Darker shadow for the bottom center
         }   
+
+        #about-button{
+            background-color: #714b33;
+            border: none;
+            border-radius: 25px;
+            padding: 1% 6%;
+            color: #dcd5ca;
+            font-size: 16px;
+            margin: 5% 0% 2% 0%;
+            cursor: pointer;
+            transition: color 0.7s ease, background-color 0.7s ease;
+
+            &:hover {
+                color: #000;
+                background-color: #dcd5ca;
+            }
+        }
         
         .audio-waveform {
             display: flex;
@@ -149,7 +166,7 @@
                 z-index: 5;
                 position: absolute;
                 top: 10%;
-                left: 4.25%;
+                left: 0%;
                 height: 75%;
                 width: 10px;
                 border-radius: 25px;
@@ -237,8 +254,8 @@
 
                         #user-icon{
                             position: absolute;
-                            top: -15%;
-                            left: 10%;
+                            top: -25%;
+                            left: 5%;
                             border-radius: 50%;
                             width: 108px;
                         }

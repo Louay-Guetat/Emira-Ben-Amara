@@ -21,6 +21,32 @@
       color: var(--fc-accent-color);
     }
   }
+
+  .fc-list-event{
+    border: none;
+    &:hover{
+      background-color: white;
+    }
+    .fc-list-event-time{
+      margin-right: 15%;
+      border: none;*
+      &:hover{
+        background-color: white;
+      }
+    }
+    .fc-list-event-graphic{
+      border: none;
+      &:hover{
+        background-color: white;
+      }
+    }
+    .fc-list-event-title{
+      border: none;
+      &:hover{
+        background-color: white;
+      }
+    }
+  }
   
   .agenda {
     display: flex;

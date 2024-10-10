@@ -70,7 +70,7 @@ const ThemeParts = ({ theme }) => {
     }, [theme, user]);
 
     const buyThemeParts = () => {
-        setPaymentModal(true); // Open the payment modal
+        setPaymentModal(true);
     };
 
     const payWithStripe = async () => {
@@ -94,22 +94,21 @@ const ThemeParts = ({ theme }) => {
         } catch (error) {
             console.log(error);
         } finally {
-            setPaymentModal(false); // Close the modal after payment process
+            setPaymentModal(false);
         }
     };
 
-    const handleThemePartClick = (themePart) => {
-        if (owned) {
+    const handleThemePartClick = (themePart, index) => {
+        if (owned || index === 0) {
             setThemePart(themePart);
         } else {
             setAnimateBuyButton(true);
-            // Reset the animation state after a short duration
-            setTimeout(() => setAnimateBuyButton(false), 1000); // 1 second for animation
+            setTimeout(() => setAnimateBuyButton(false), 1000);
         }
     };
 
     const handlePaymentClose = () => {
-        setPaymentModal(false); // Close the modal
+        setPaymentModal(false);
     };
 
     return (
@@ -130,8 +129,8 @@ const ThemeParts = ({ theme }) => {
                             <span>{theme.description}</span>
                             <ol>
                                 {themeParts.length > 0 &&
-                                    themeParts.map((themePart) => (
-                                        <li key={themePart.id} onClick={() => handleThemePartClick(themePart)}>
+                                    themeParts.map((themePart, index) => (
+                                        <li key={themePart.id} onClick={() => handleThemePartClick(themePart, index)}>
                                             {themePart.title}
                                         </li>
                                     ))}

@@ -25,7 +25,6 @@ function initializeOneToOne(server) {
       if (usersInRooms[roomId].length >= 2) {
         socket.emit("roomFull", { message: "This room is already full." });
         socket.leave(roomId); 
-        console.log('hello')
         return;
       }
     

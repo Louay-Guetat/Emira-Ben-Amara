@@ -19,6 +19,7 @@ import {
     Button,
     Typography,
 } from '@mui/material'; // Ensure you have MUI installed
+import PDFModal from '../components/PDFModal';
 
 const Books = () =>{
     const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
@@ -29,6 +30,8 @@ const Books = () =>{
     const {user, loading} = useUser()
     const [paymentModal, setPaymentModal] = useState(false); // State for payment modal
     const [ownedBooks, setOwnedBooks] = useState([])
+    const [selectedPDF, setSelectedPDF] = useState('');
+    const [pdfModalOpen, setPDFModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -102,34 +105,15 @@ const Books = () =>{
         }
     }
 
-    const downloadPreview = async (url) => {
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    // Add any required headers here, like authorization if needed
-                },
-            });
-    
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-    
-            const blob = await response.blob(); // Convert the response to a Blob
-            const link = document.createElement('a'); // Create a temporary anchor element
-            link.href = window.URL.createObjectURL(blob); // Create an object URL for the Blob
-            link.download = 'book_preview.pdf'; // Specify the default filename for the download
-            document.body.appendChild(link); // Append the link to the body
-            link.click(); // Programmatically click the link to trigger the download
-            document.body.removeChild(link); // Remove the link from the document
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-        }
-    };
-
     const shareOn = (book) =>{
 
     }
+
+    const handlePDFClick = (event, pdfSrc) => {
+        event.stopPropagation();
+        setSelectedPDF(pdfSrc);
+        setPDFModalOpen(true);
+    };
 
     if (!user){
         navigate('/SignIn')
@@ -191,7 +175,7 @@ const Books = () =>{
                                                     {!ownedBooks?.some((ownedBook) => ownedBook.id === book.id) && (
                                                         <button onClick={() => buyBook(book)}>Acheter Maintenant</button>
                                                     )}  
-                                                    <button onClick={() => downloadPreview(book.book_preview)}> Télécharger un Extrait Gratuit  </button>
+                                                    <button onClick={(e) => handlePDFClick(e, `${SERVER}${book.book_preview}`)}> Visualisez un Extrait Gratuit  </button>
                                                     <button onClick={() => shareOn(book)}> Partager </button>
                                                 </div>
                                             </div>
@@ -228,6 +212,11 @@ const Books = () =>{
                         </div>
                     </div>
                 </div>
+                <PDFModal
+                    open={pdfModalOpen}
+                    onClose={() => setPDFModalOpen(false)}
+                    pdfSrc={selectedPDF}
+                />
             </Layout>
         )
     }

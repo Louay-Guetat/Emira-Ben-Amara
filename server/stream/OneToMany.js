@@ -45,16 +45,48 @@ async function handleConsumer({ body }, res) {
         return res.status(403).json({ error: 'Maximum number of users reached' });
     }
 
+    // Process the SDP (Session Description Protocol)
     const desc = new webrtc.RTCSessionDescription(body.sdp);
     await peer.setRemoteDescription(desc);
-    senderStream.getTracks().forEach(track => peer.addTrack(track, senderStream));
+
+    // Add tracks from senderStream (broadcasting stream)
+    if (senderStream) {
+        senderStream.getTracks().forEach(track => peer.addTrack(track, senderStream));
+    }
+
+    // Create an answer and send it back
     const answer = await peer.createAnswer();
     await peer.setLocalDescription(answer);
     const payload = { sdp: peer.localDescription };
+
+    // Handle incoming tracks (the viewer's stream)
+    peer.ontrack = (event) => {
+        // Add the track from the consumer (viewer) to the senderStream
+        handleIncomingTrack(event, peer);
+    };
+
     const dataChannel = peer.createDataChannel("chat");
     setupDataChannel(dataChannel);
 
     res.json(payload);
+}
+
+function handleIncomingTrack(event, peer) {
+    const stream = event.streams[0];
+    console.log("Received track from viewer's camera:", stream);
+
+    // You can now broadcast this stream to other users or handle it as needed
+    senderStream = stream; // Update senderStream to use this viewer's stream
+    broadcastViewerStream(stream, peer);
+}
+
+// Function to broadcast viewer's video stream to other peers
+function broadcastViewerStream(stream, peer) {
+    Object.values(peers).forEach(({ peer: otherPeer }) => {
+        if (otherPeer !== peer) {
+            stream.getTracks().forEach(track => otherPeer.addTrack(track, stream));
+        }
+    });
 }
 
 async function handleBroadcast({ body }, res) {

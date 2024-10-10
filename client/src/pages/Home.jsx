@@ -6,7 +6,6 @@ import temoi from '../utils/testAudio.mp3';
 import video from '../utils/test.mp4'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
-import facebook from '../utils/icons/facebook.png';
 import { ReactComponent as Icon } from '../utils/icons/quotes.svg'; // Adjust the path accordingly
 import star from '../utils/icons/star.png'
 import axios from 'axios';
@@ -69,7 +68,7 @@ const Home = () => {
     
         const resetCursorPosition = () => {
             if (cursorRef.current) {
-                cursorRef.current.style.left = '4.25%';
+                cursorRef.current.style.left = '0%';
             }
         };
     
@@ -146,6 +145,10 @@ const Home = () => {
         };
     }, []);
 
+    const disableRightClick = (e) => {
+        e.preventDefault();
+    };
+
     if (blog){
         return <Blogs blogItem={blog} />
     }else{
@@ -153,12 +156,11 @@ const Home = () => {
             <Layout>
                 <div className='home-container'>
                     <div className='home-banner'>
-                        <h1>Commencez Votre Voyage Maintenant!</h1>
+                        <h1>Inspirez, Changez, Rayonnez : L’Art de Votre Évolution Personnel</h1>
                         <span>
                             Transformez votre vie avec les méthodes éprouvées de coaching d'Emira.<br />
-                            Rejoignez des centaines de personnes qui ont déjà franchi le pas vers une nouvelle vie.
-                        </span>
-                        <button onClick={handleSignUp}>Inscrivez Vous !</button>
+                            Rejoignez des centaines de personnes qui ont déjà osé faire le premier pas vers le changement et découvert une vie pleine de possibilités!                        </span>
+                        <button onClick={handleSignUp}>Rejoignez notre communauté !</button>
                     </div>
                     <div className='temoignage' id='temoignage'>
                         <h1>Témoignages Clients</h1>
@@ -246,6 +248,9 @@ const Home = () => {
                                 onClick={toggleVideoPlay} // Make video clickable to pause/play
                                 width="400" 
                                 controls={false} 
+                                disablePictureInPicture
+                                controlsList="nodownload"  
+                                onContextMenu={disableRightClick} // Disable right-click              
                             />
                             <button 
                                 className={`play-button ${isPlayingVideo ? 'hidden' : ''}`} 
@@ -254,6 +259,8 @@ const Home = () => {
                                 {isPlayingVideo ? <FontAwesomeIcon icon={faPause} color='white' /> : <FontAwesomeIcon icon={faPlay} color='white' />}
                             </button>
                         </div>
+
+                        <button id='about-button' onClick={() => navigate('/aboutEmira')}> Découvrer mieux Emira </button>
                     </div>
                     <div className='programs'>
                         <div className='programs-content'>
@@ -262,9 +269,11 @@ const Home = () => {
                             <ul>
                                 <li> Accès à des vidéos exclusives </li>
                                 <li> Séances de coaching personnalisées </li>
-                                <li> Accès à vie à tous les contenus </li>
-                                <li> Outils et techniques pour booster votre confiance </li>
+                                <li> Accompagnement VIP </li>
                                 <li> Support continu avec des sessions en direct </li>
+                                <li> Accès à vie à tous les contenus </li>
+                                <li> Ateliers Intéractifs  </li>
+                                <li> Ressources puissantes et méthodes éprouvées </li>
                             </ul>
                             <a href='/courses'> Explorez Nos Cours </a>
                         </div>

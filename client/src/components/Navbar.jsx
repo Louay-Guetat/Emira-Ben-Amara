@@ -6,6 +6,7 @@ import { SERVER } from '../config/config';
 import axios from 'axios';
 import { faGauge, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import useUser from '../hooks/useUser';
+import logo from '../utils/logo.svg'
 
 const Navbar = () => {
     const { user, loading } = useUser();    
@@ -33,11 +34,14 @@ const Navbar = () => {
     return (
         <div className='navbar'>
             <div className='logo'>
-                Emira Ben Amara
+                <img src={logo} alt="Logo" />
             </div>
             <div className='links'>
                 <NavLink to='/' activeclassname='active'>
                     Accueil
+                </NavLink>
+                <NavLink to='/aboutEmira' activeclassname='active'>
+                    à propos
                 </NavLink>
                 <NavLink to='/courses' activeclassname='active'>
                     Cours
@@ -51,9 +55,6 @@ const Navbar = () => {
                 <NavLink to='/contact' activeclassname='active'>
                     Contact
                 </NavLink>
-                <NavLink to='/aboutEmira' activeclassname='active'>
-                    à propos
-                </NavLink>
                 <NavLink to='/Books' activeclassname='active'>
                     Livres
                 </NavLink> 
@@ -66,7 +67,9 @@ const Navbar = () => {
                 { user ? 
                     (
                         <div className='profile'>
-                            <FontAwesomeIcon icon={faUser} size='xl' />
+                            <NavLink to='/Profile' activeclassname='active'>
+                                <FontAwesomeIcon icon={faUser} size='xl' />
+                            </NavLink> 
                             {user.role === 'admin' ? (<button onClick={Dashboard}><FontAwesomeIcon icon={faGauge} size='2xl' color='white' /></button>) : null}
                             <button onClick={logout}> <FontAwesomeIcon icon={faRightToBracket} size='xl' /> </button>
                         </div>

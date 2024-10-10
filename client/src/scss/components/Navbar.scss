@@ -15,10 +15,15 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        flex: 15%;
+        flex: 20%;
         font-family: $brittany;
-        font-size: 38px;
+        font-size: 34px;
         color: white;
+
+        img{
+            width: 100%;
+            margin-top: 5%;
+        }
     }
 
     .links {
@@ -26,7 +31,7 @@
         align-items: center;
         justify-content: center;
         gap: 2%;
-        flex: 70%;
+        flex: 75%;
         
         a {
             display: flex;
@@ -85,6 +90,11 @@
             border: none;
             background-color: transparent;
         }
+
+        a{
+            color: white;
+            text-decoration: none;
+        }
     }
 
     .auth{
@@ -92,7 +102,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        flex: 10%;
+        flex: 5%;
         gap: 20px;
 
         button{

@@ -228,14 +228,34 @@ const Agenda = () => {
     const combinedEvents = [...appointmentEvents, ...availabilitySegments, ...formattedEvents];
 
     const handleEventClick = (info) => {
-        // Initialize Tippy.js with appointment details
         tippy(info.el, {
-            content: `Appointment with: ${info.event.title} <br /> Start: ${dayjs(info.event.start).format('YYYY-MM-DD HH:mm')} <br /> End: ${dayjs(info.event.end).format('YYYY-MM-DD HH:mm')}`,
+            content: `
+                Rendez vous avec: ${info.event.title} <br /> 
+                Commence: ${dayjs(info.event.start).format('DD/MM/YYYY à HH:mm')} <br /> 
+                Se fini: ${dayjs(info.event.end).format('DD/MM/YYYY à HH:mm')} <br /> 
+                Lien du rendez vous: 
+                <a 
+                    style={{color: 'white'}} 
+                    target='_blank' 
+                    href='http://localhost:3000/appointment/${info.event.appointement_link}' 
+                    onclick="event.stopPropagation();" // Prevent click event propagation
+                > 
+                    Lien 
+                </a>`,
             allowHTML: true,
             placement: 'top',
             trigger: 'click',
+            zIndex: '99999',
+            onShow(instance) {
+                const link = instance.popper.querySelector('a');
+                if (link) {
+                    link.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                    });
+                }
+            }
         });
-    };
+    };    
 
     return (
         <AdminLayout>
@@ -255,7 +275,7 @@ const Agenda = () => {
                                 headerToolbar={{
                                     left: 'prev,next today',
                                     center: 'title',
-                                    right: 'dayGridMonth,timeGridWeek,timeGridDay', 
+                                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek', 
                                 }}
                                 editable={false}
                                 selectable={true}

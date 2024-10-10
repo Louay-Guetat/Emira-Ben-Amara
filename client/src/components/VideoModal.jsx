@@ -29,6 +29,10 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
     right: theme.spacing(1),
 }));
 
+const disableRightClick = (e) => {
+    e.preventDefault();
+};  
+
 const VideoModal = ({ open, onClose, videoSrc }) => {
     return (
         <StyledModal open={open} onClose={onClose}>
@@ -36,7 +40,7 @@ const VideoModal = ({ open, onClose, videoSrc }) => {
                 <CloseButton onClick={onClose}>
                     <CloseIcon />
                 </CloseButton>
-                <video controls style={{ width: '100%', height: '100%' }}>
+                <video controls style={{ width: '100%', height: '100%' }} disablePictureInPicture controlsList="nodownload" onContextMenu={disableRightClick}>
                     <source src={videoSrc} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>

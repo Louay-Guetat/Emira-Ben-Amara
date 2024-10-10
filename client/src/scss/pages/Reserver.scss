@@ -52,11 +52,12 @@
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         .fc-direction-ltr {
             width: 100%;
-            max-height: 72.5vh;
+            max-height: 73.5vh;
             color: var(--fc-theme-color);
             background-color: $main-color;
             border-radius: 10px;
             border: 1px solid var(--fc-border-color);
+            overflow: hidden;
         }
     }
 }

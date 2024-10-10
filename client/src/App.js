@@ -14,7 +14,7 @@ import DisplayEvents from './pages/DisplayEvents';
 import Reserver from './pages/Reserver';
 import Complete from './payments/Success';
 import AppointmentPurchaseSuccess from './payments/AppointmentPurchaseSuccess';
-import Room from './pages/OneToManyMeet/Room';
+import Room from './pages/ManyToMany/Room';
 import AboutUs from './pages/AboutUs';
 import Blogs from './pages/Blogs';
 import Books from './pages/Books';
@@ -23,6 +23,7 @@ import BooksAdmin from './pages/admin/BooksAdmin';
 import BookPurchaseSuccess from './payments/BookPurchaseSuccess';
 import EventPurchase from './payments/EventPurchase';
 import OneToOneMeet from './pages/OneToOneMeet';
+import Profile from './pages/auth/Profile';
 
 const App = () => {
   return (
@@ -40,6 +41,7 @@ const App = () => {
         {/* Auth links */}
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/Profile' element={<Profile />} />
 
         {/* Admin protected routes */}
         <Route path='/admin/dashboard' element={<ProtectedRoute element={Dashboard} />} />
@@ -51,7 +53,7 @@ const App = () => {
 
 
         {/* Visioconference routes */}
-        <Route path='/Appointment/:roomId' element={<OneToOneMeet />} />
+        <Route path='/Appointment/:roomID' element={<OneToOneMeet />} />
         <Route path='/visioconference/:roomId' element={<Room />} />
         
         {/* Payment Redirection pages */} 

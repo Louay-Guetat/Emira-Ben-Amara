@@ -8,10 +8,14 @@ import Layout from '../Layouts/Layout';
 import ThemeParts from './ThemeParts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import { faFilePdf } from '@fortawesome/free-regular-svg-icons';
+import PDFModal from '../components/PDFModal';
 
 const Module = ({theme, themePart}) =>{
     const [modules, setModules] = useState([])
     const [themePa, setThemePa] = useState()
+    const [selectedPDF, setSelectedPDF] = useState('');
+    const [pdfModalOpen, setPDFModalOpen] = useState(false);
 
     useEffect(() =>{
         const fetchModules = async () =>{
@@ -33,28 +37,18 @@ const Module = ({theme, themePart}) =>{
         }
     }, [])
 
-    const handleDownload = async (module) => {
-        const zip = new JSZip();
-        
-        try {
-            const ebookResponse = await fetch(module.ebook);
-            const ebookBlob = await ebookResponse.blob();
-            
-            const assessmentsResponse = await fetch(module.assessments);
-            const assessmentsBlob = await assessmentsResponse.blob();
-            
-            zip.file('ebook.pdf', ebookBlob); 
-            zip.file('assessments.pdf', assessmentsBlob);
-            
-            const zipBlob = await zip.generateAsync({ type: 'blob' });
-            saveAs(zipBlob, `${module.title}_resources.zip`);
-        } catch (error) {
-            console.error('Error downloading resources:', error);
-        }
+    const disableRightClick = (e) => {
+        e.preventDefault();
+    };
+
+    const handlePDFClick = (event, pdfSrc) => {
+        event.stopPropagation();
+        setSelectedPDF(pdfSrc);
+        setPDFModalOpen(true);
     };
 
     return(
-        <Layout>
+        <>
             { themePa ? (<ThemeParts theme={theme} />) : (
                 <div className="modules">
                     <button id='go-back' onClick={() => setThemePa(themePart)}> <FontAwesomeIcon icon={faCaretLeft} size='2xl' color='white' /> </button>
@@ -63,14 +57,33 @@ const Module = ({theme, themePart}) =>{
                     <ol> <li> {themePart.title} </li> </ol>
                     {modules.length > 0 && 
                     modules.map((module)=>(
-                        <div className='module'>
-                            <video src={module.video} controls/>
-                            <button className='download' onClick={() => handleDownload(module)}> Télécharger des ressources </button>
+                        <div className='module' key={module.id}>
+                            <video src={module.video} 
+                                controls
+                                disablePictureInPicture
+                                controlsList="nodownload"  
+                                onContextMenu={disableRightClick}        
+                            />
+                            <div className='Ressources'>
+                                <div onClick={(e) => handlePDFClick(e, `${SERVER}${module.ebook}`)}>
+                                    <span> E-Book </span>
+                                    <FontAwesomeIcon icon={faFilePdf} />
+                                </div>
+                                <div onClick={(e) => handlePDFClick(e, `${SERVER}${module.assessments}`)}>
+                                    <span> Assessments </span>
+                                    <FontAwesomeIcon icon={faFilePdf} />
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
             )}
-        </Layout>
+            <PDFModal
+                open={pdfModalOpen}
+                onClose={() => setPDFModalOpen(false)}
+                pdfSrc={selectedPDF}
+            />
+        </>
     )
 }
 

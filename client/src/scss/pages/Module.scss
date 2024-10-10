@@ -31,6 +31,7 @@
         width: 0%;
         cursor: pointer;
         border: none;
+        z-index: 99999;
     }
 
     h1{
@@ -67,18 +68,31 @@
 
         }
 
-        .download{
+        .Ressources{
             display: flex;
             align-items: center;
-            background-color: $secondary-color;
-            color: $main-color;
-            padding: 1% 5%;
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: none;
-            cursor: pointer;
-            margin-top: 5%;
+            justify-content: center;
+            margin: 5% 0%;
+            width: 100%;
+
+            div{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                margin: 0% 12.5%;
+                width: 100%;
+                span{
+                    text-align: center;
+                    font-size: 28px;
+                    margin-bottom: 20%;
+                    width: 100%;
+                }
+
+                svg{
+                    font-size: 56px;
+                }
+            }
         }
     }
 }

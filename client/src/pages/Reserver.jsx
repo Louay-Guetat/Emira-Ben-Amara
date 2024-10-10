@@ -17,8 +17,9 @@ import useUser from "../hooks/useUser.jsx";
 import { loadStripe } from '@stripe/stripe-js';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCcStripe } from '@fortawesome/free-brands-svg-icons';  // Import Stripe icon
+import { faCcStripe } from '@fortawesome/free-brands-svg-icons';
 import { useNavigate } from "react-router-dom";
+import frLocale from '@fullcalendar/core/locales/fr';
 
 const Reserver = () => {
     const {user, loading} = useUser()
@@ -94,36 +95,47 @@ const Reserver = () => {
         fetchEvents();
     }, []);
 
-    const handleDateSelect = (selectInfo) => {
-        const { start, end } = selectInfo;
-        // Check if selected time overlaps with any available slots
+    const formatLocalDateTime24H = (date) => {
+        const tzOffset = date.getTimezoneOffset() * 60000; // Offset in milliseconds
+        const localISOTime = new Date(date - tzOffset).toISOString().slice(0, 16);
+        return localISOTime;
+    };    
+
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zero if needed
+        const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes and pad with zero if needed
+    
+        return `${day}/${month}/${year} à ${hours}:${minutes}`;
+    };    
+
+    const handleDateSelect = (info) => {
+        const { date } = info;
+    
+        // Automatically set the end time to 1 hour and 15 minutes from the clicked time
+        const end = new Date(date.getTime() + 75 * 60 * 1000); // 1 hour 15 minutes = 75 minutes
+    
+        // Check if the clicked time falls within available slots
         const isAvailable = availabilitySegments.some(slot => {
             const slotStart = new Date(slot.start);
             const slotEnd = new Date(slot.end);
-            return (start >= slotStart && end <= slotEnd);
+            return (date >= slotStart && end <= slotEnd);
         });
-
+    
         if (isAvailable) {
             setSelectedTime({
-                start: start.toISOString().slice(0, 16),  // Format for datetime-local input
-                end: end.toISOString().slice(0, 16),
+                start: formatLocalDateTime24H(date),  // Local time formatting for the start in 24-hour format
+                end: formatLocalDateTime24H(end),    // Local time formatting for the end in 24-hour format
             });
-            setOpenModal(true);  // Open the modal to confirm or adjust times
-            toast.success(`Date sélectionnée: ${start.toLocaleString()} - ${end.toLocaleString()}`);
+    
+            setOpenModal(true);  // Open the modal to confirm the clicked time range
         } else {
-            toast.error("La date sélectionnée n'est pas dans les plages disponibles.");
+            toast.error("La date sélectionnée n'est pas dans les plages disponibles.", {autoClose: 2000});
         }
-    };
-
-    const handleSave = () => {
-        const start = new Date(selectedTime.start);
-        const end = new Date(selectedTime.end);
-        console.log("Saving appointment:", start, end);
-
-        // Close time adjustment modal and open payment modal
-        setOpenModal(false);
-        setPaymentModal(true);  // Show payment options modal
-    };
+    };    
 
     const handlePaymentClose = () => {
         setPaymentModal(false);
@@ -133,13 +145,6 @@ const Reserver = () => {
     const handleClose = () => {
         setOpenModal(false);
         calendarRef.current.getApi().unselect();
-    };
-
-    const handleChange = (e) => {
-        setSelectedTime({
-            ...selectedTime,
-            [e.target.name]: e.target.value,
-        });
     };
 
     const payWithStripe = async () =>{
@@ -164,83 +169,96 @@ const Reserver = () => {
         }
     }
 
-        // Helper function to create availability segments
-        const createAvailabilitySegments = (availability, appointments) => {
-            const segments = [];
+    // Helper function to create availability segments
+    const createAvailabilitySegments = (availability, appointments) => {
+        const segments = [];
     
-            // Iterate over each availability
-            availability.forEach(avail => {
-                let availStart = new Date(avail.start_date);
-                let availEnd = new Date(avail.end_date);
+        // Iterate over each availability
+        availability.forEach(avail => {
+            let availStart = new Date(avail.start_date);
+            let availEnd = new Date(avail.end_date);
     
-                // Iterate over each appointment
-                appointments.forEach(appointment => {
-                    let appStart = new Date(appointment.start_date);
-                    let appEnd = new Date(appointment.end_date);
+            // Iterate over each appointment
+            appointments.forEach(appointment => {
+                let appStart = new Date(appointment.start_date);
+                let appEnd = new Date(appointment.end_date);
     
-                    // Check if the appointment overlaps with the availability
-                    if (appStart < availEnd && appEnd > availStart) {
-                        // If there's time before the appointment, create a segment
-                        if (availStart < appStart) {
-                            segments.push({
-                                id: `avail-${avail.id}-before-${appointment.id}`,
-                                title: 'Available',
-                                start: availStart.toISOString(),
-                                end: appStart.toISOString(),
-                                backgroundColor: 'green',
-                                overlap: false,
-                                display: 'background',
-                                color: 'green',
-                                editable: false,
-                            });
-                        }
-                        
-                        // Update the availability start time to the end of the appointment
-                        if (availEnd > appEnd) {
-                            availStart = appEnd; // Continue from the end of the appointment
-                        } else {
-                            availStart = availEnd; // No availability left
-                        }
+                // Check if the appointment overlaps with the availability
+                if (appStart < availEnd && appEnd > availStart) {
+                    // If there's time before the appointment, create an availability segment
+                    if (availStart < appStart) {
+                        segments.push({
+                            id: `avail-${avail.id}-before-${appointment.id}`,
+                            title: 'Available',
+                            start: availStart.toISOString(),
+                            end: appStart.toISOString(),
+                            backgroundColor: 'green',
+                            overlap: false,
+                            display: 'background',
+                            color: 'green',
+                            editable: false,
+                        });
                     }
-                });
-    
-                // If there's remaining availability after the last appointment
-                if (availStart < availEnd) {
+                    
+                    // Create a segment for the appointment itself in red
                     segments.push({
-                        id: `avail-${avail.id}-after`,
-                        title: 'Available',
-                        start: availStart.toISOString(),
-                        end: availEnd.toISOString(),
-                        backgroundColor: 'green',
-                        overlap: false,
+                        id: `appointment-${appointment.id}`,
+                        title: 'Réserver',
+                        start: appStart.toISOString(),
+                        end: appEnd.toISOString(),
+                        backgroundColor: 'orange',
+                        overlap: true,
                         display: 'background',
-                        color: 'green',
+                        textColor: 'black',
                         editable: false,
                     });
+    
+                    // Update the availability start time to the end of the appointment
+                    if (availEnd > appEnd) {
+                        availStart = appEnd; // Continue from the end of the appointment
+                    } else {
+                        availStart = availEnd; // No availability left
+                    }
                 }
             });
     
-            return segments;
-        };
-
-        const handleEventClick = (info) => {
-            if (info.event.extendedProps.type === 'formattedEvent') {
-                navigate('/events')
+            // If there's remaining availability after the last appointment
+            if (availStart < availEnd) {
+                segments.push({
+                    id: `avail-${avail.id}-after`,
+                    title: 'Available',
+                    start: availStart.toISOString(),
+                    end: availEnd.toISOString(),
+                    backgroundColor: 'green',
+                    overlap: false,
+                    display: 'background',
+                    color: 'green',
+                    editable: false,
+                });
             }
-        };
+        });
+    
+        return segments;
+    };
+    
+    const handleEventClick = (info) => {
+        if (info.event.extendedProps.type === 'formattedEvent') {
+            navigate('/events')
+        }
+    };
 
-        const formattedEvents = events.map(event => ({
-            id: event.id,
-            title: 'Evénement: ' + event.title,
-            start: event.start,
-            end: event.end,
-            allDay: event.allDay || false,
-            backgroundColor: event.backgroundColor || 'blue',
-            type: 'formattedEvent', // Add a custom property to identify these events
-        }));        
+    const formattedEvents = events.map(event => ({
+        id: event.id,
+        title: 'Evénement: ' + event.title,
+        start: event.start,
+        end: event.end,
+        allDay: event.allDay || false,
+        backgroundColor: event.backgroundColor || 'blue',
+        type: 'formattedEvent', // Add a custom property to identify these events
+    }));        
 
-        // Transform availability events into segments
-        const availabilitySegments = [...createAvailabilitySegments(availability, appointements), ...formattedEvents];
+    // Transform availability events into segments
+    const availabilitySegments = [...createAvailabilitySegments(availability, appointements), ...formattedEvents];
 
     return (
         <Layout>
@@ -251,58 +269,69 @@ const Reserver = () => {
                         <h1>Réserver Votre Place Dès Maintenant</h1>
                         <span>Choisissez La date Qui vous convient, Je serai Disponible.</span>
                         <div className="calendar-container">
-                            <FullCalendar
-                                ref={calendarRef}
-                                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                                initialDate={new Date()}
-                                validRange={{ start: new Date() }}
-                                hiddenDays={[0, 6]}  
-                                initialView="timeGridWeek"
-                                headerToolbar={{
-                                    left: 'prev,next today',
-                                    center: 'title',
-                                    right: 'timeGridWeek,timeGridDay'
-                                }}
-                                selectable={true}
-                                events={availabilitySegments}
-                                select={handleDateSelect}
-                                slotMinTime='08:00:00'
-                                slotMaxTime='20:00:00'
-                                allDaySlot={false}
-                                eventClick={handleEventClick}
-                                slotLabelFormat={{ hour: 'numeric', minute: '2-digit', hour12: false }}
-                            />
+                        <FullCalendar
+                            ref={calendarRef}
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                            initialDate={new Date()}
+                            validRange={{ start: new Date() }}
+                            hiddenDays={[0, 6]}  
+                            initialView="timeGridWeek"
+                            headerToolbar={{
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'timeGridWeek,timeGridDay'
+                            }}
+                            locale={frLocale}
+                            selectable={false}
+                            events={availabilitySegments}
+                            slotMinTime='08:00:00'
+                            slotMaxTime='19:00:00'
+                            allDaySlot={false}
+                            dateClick={handleDateSelect}
+                            slotDuration="00:30:00"
+                            selectMinDistance={75}
+                            slotLabelFormat={{ hour: 'numeric', minute: '2-digit', hour12: false }}
+                        />
                         </div>
-                        {/* Modal for adjusting time */}
+                        {/* Modal for confirming time */}
                         <Dialog open={openModal} onClose={handleClose}>
-                            <DialogTitle>Adjust Time Range</DialogTitle>
+                            <DialogTitle>Confirmer la Réservation</DialogTitle>
                             <DialogContent>
                                 <TextField
-                                    label="Start Time"
-                                    type="datetime-local"
+                                    label="Heure de Début"
+                                    type="text"
                                     name="start"
-                                    value={selectedTime.start}
-                                    onChange={handleChange}
-                                    fullWidth
-                                    InputLabelProps={{ shrink: true }}
-                                />
-                                <TextField
-                                    label="End Time"
-                                    type="datetime-local"
-                                    name="end"
-                                    value={selectedTime.end}
-                                    onChange={handleChange}
+                                    value={formatDateTime(selectedTime.start)}
                                     fullWidth
                                     InputLabelProps={{ shrink: true }}
                                     style={{ marginTop: 20 }}
+                                    disabled
+                                />
+                                <TextField
+                                    label="Heure de Fin"
+                                    type="text"
+                                    name="end"
+                                    value={formatDateTime(selectedTime.end)}
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                    style={{ marginTop: 20 }}
+                                    disabled
                                 />
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={handleClose}>Cancel</Button>
-                                <Button onClick={handleSave} color="primary" variant="contained">Save</Button>
+                                <Button onClick={handleClose}>Annuler</Button>
+                                <Button 
+                                    onClick={() => {
+                                        setOpenModal(false);
+                                        setPaymentModal(true);
+                                    }} 
+                                    color="primary" 
+                                    variant="contained"
+                                >
+                                    Confirmer
+                                </Button>
                             </DialogActions>
                         </Dialog>
-
                         {/* Payment options modal */}
                         <Dialog open={paymentModal} onClose={handlePaymentClose}>
                             <DialogTitle>Choose Payment Option</DialogTitle>
