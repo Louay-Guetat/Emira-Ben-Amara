@@ -1,5 +1,10 @@
 @import '../variables';
 
+
+.mobileNavbar{
+    display: none;
+}
+
 .navbar {
     position: absolute;
     display: flex;
@@ -9,7 +14,7 @@
     background-color: transparent;
     flex: 100%;
     z-index: 2;
-
+    
     .logo {
         margin-left: 2%;
         display: flex;
@@ -115,6 +120,125 @@
 
             &:hover{
                 background-color: darken($secondary-color, 10%);
+            }
+        }
+    }
+}
+
+@media screen and (max-width : 768px){
+    .navbar{
+        display: none;
+    }
+
+    .mobileNavbar{
+        display: flex;
+        position: absolute;
+        min-height: 100vh;
+        width: 100%;
+
+        #openButton{
+            position: absolute;
+            top: 2.5%;
+            right: 2.5%;
+            z-index: 10;
+            display: flex;
+            margin-left: auto;
+            border: none;
+            background-color: transparent;
+            svg{
+                font-size: 26px;
+            }
+        }
+
+        .mobileNavbarOpened{
+            z-index: 999;
+            background-color: $main-color;
+            width: 100%;
+            min-height: 100vh;
+            #closeButton{
+                position: absolute;
+                top: 2.5%;
+                right: 2.5%;
+                z-index: 10;
+                display: flex;
+                margin-left: auto;
+                border: none;
+                background-color: transparent;
+                svg{
+                    font-size: 26px;
+                }
+            }
+            .logo{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+
+                img{
+                    width: 70%;
+                }
+            }
+
+            .links{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                margin-top: -20%;
+                a{
+                    color: black;
+                    font-size: 20px;
+                    padding: 2.5% 10%;
+                    margin: 1% 0%;
+                    text-decoration: none;
+                    text-transform: uppercase;
+                }
+            }
+
+            .profile{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                margin-top: 5%;
+                
+                a{
+                    margin: 0% 5%;
+                    border-radius: 25px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: none;
+                    background-color: #7a6d4e;
+                    color: white;
+                }
+
+                button{
+                    margin: 0% 5%;
+                    border-radius: 25px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: none;
+                    background-color: #7a6d4e;
+                    color: white;
+                }
+            }
+
+            .auth{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                margin-top: 5%;
+                button{
+                    margin: 0% 5%;
+                    border-radius: 25px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: none;
+                    background-color: #7a6d4e;
+                    color: white;
+                }
             }
         }
     }

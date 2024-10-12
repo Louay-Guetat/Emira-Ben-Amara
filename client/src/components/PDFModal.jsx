@@ -7,34 +7,42 @@ import Modal from '@mui/material/Modal';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const StyledModal = styled(Modal)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'column',
+    zIndex: '99999'
 }));
 
-const ModalContent = styled('div')(({ theme }) => ({
+const ModalContent = styled('div')(({ theme, isMobile }) => ({
     position: 'relative',
-    width: '50%',
-    height: '95vh',
+    width: isMobile ? '100%' : '50%',
+    height: isMobile ? '90vh' : '95vh',
+    display: 'flex',
     backgroundColor: 'white',
-    padding: theme.spacing(1),
+    padding: theme.spacing(isMobile ? 0.5 : 1),
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[5],
     overflow: 'hidden',
 }));
 
-const CloseButton = styled(IconButton)(({ theme }) => ({
+const CloseButton = styled(IconButton)(({ theme, isMobile }) => ({
     position: 'absolute',
-    top: theme.spacing(1),
-    right: theme.spacing(1),
+    top: theme.spacing(isMobile ? 0.5 : 1),
+    right: theme.spacing(isMobile ? 0.5 : 1),
+    color: 'black'
 }));
 
 const PDFModal = ({ open, onClose, pdfSrc }) => {
     // Initialize the zoom plugin
     const zoomPluginInstance = zoomPlugin();
     const { ZoomIn, ZoomOut, ZoomPopover } = zoomPluginInstance;
+
+    // Detect if the screen size is mobile
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     // Disable right-click globally inside the modal
     useEffect(() => {
@@ -51,12 +59,19 @@ const PDFModal = ({ open, onClose, pdfSrc }) => {
 
     return (
         <StyledModal open={open} onClose={onClose}>
-            <ModalContent>
-                <CloseButton style={{ marginRight: '2.5%', color: 'white' }} onClick={onClose}>
+            <ModalContent isMobile={isMobile}>
+                <CloseButton style={{ color: 'white' }} onClick={onClose} isMobile={isMobile}>
                     <CloseIcon />
                 </CloseButton>
                 <div style={{ width: '100%', height: '100%'}}>
-                    <div style={{ display: 'flex', justifyContent: 'center',marginBottom: '10px' }}>
+                    <div 
+                        style={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            marginBottom: isMobile ? '5px' : '10px',
+                            flexDirection: 'row',
+                        }}
+                    >
                         {/* Zoom controls */}
                         <ZoomOut />
                         <ZoomPopover />

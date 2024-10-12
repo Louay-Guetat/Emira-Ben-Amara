@@ -25,10 +25,13 @@ const Footer = () =>{
             </ul>
             <span> Vous avez d’autres questions ? Contactez-nous ici </span>
             <footer> 
-                <a href='/aboutus'> À propos </a>
-                <a onClick={scrollToTemoignage}> Témoignages </a> {/* Update this link */}
-                <a href=''> FAQ </a>
-                <a href='/contact'> Contact </a>
+                <div className='links'>
+                    <a href='/aboutus'> À propos </a>
+                    <a onClick={scrollToTemoignage}> Témoignages </a> {/* Update this link */}
+                    <a href=''> FAQ </a>
+                    <a href='/contact'> Contact </a>
+                </div>
+                
                 <div className='social-media'> 
                     <i>
                         <img src={instagram} alt="Instagram" />

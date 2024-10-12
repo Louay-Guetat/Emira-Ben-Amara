@@ -147,6 +147,7 @@ const DisplayEvents = () => {
                                             backgroundImage: `url(${evenement.image ? evenement.image : eventImage})`,
                                             backgroundRepeat: 'no-repeat',
                                             backgroundSize: 'cover',
+                                            backgroundPositionX:'43%',
                                         }}
                                     >
                                     {
@@ -155,7 +156,7 @@ const DisplayEvents = () => {
                                                 {!isCountdownFinished ? (
                                                     `${timeLeft[index]?.days}d ${timeLeft[index]?.hours}h ${timeLeft[index]?.minutes}m ${timeLeft[index]?.seconds}s`
                                                 ) : (
-                                                    'Welcome'
+                                                    'Bienvenus'
                                                 )}
                                             </div>
                                         ) : (

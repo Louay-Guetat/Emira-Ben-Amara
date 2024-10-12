@@ -1,5 +1,9 @@
 @import '../variables';
 
+.mobile-about-us{
+    display: none;
+}
+
 .AboutUs{
     display: flex;
     align-items: center;
@@ -103,6 +107,99 @@
                         align-items: center;
                         width: 60%;
                         cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px){
+    .AboutUs{
+        display: none;
+    }
+    .mobile-about-us{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+        .div-wallpaper{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-image: url('../../utils/11.jpeg');
+            background-size: cover;
+            background-position: center center;
+            min-height: 40vh;
+            max-height: 40vh;
+            width: 100%;
+            position: relative;
+            background-size: cover;
+            background-position-x: 47.5%;
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.35);
+                z-index: 0;
+            }
+        }
+
+        .main-container{
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            justify-content: center;
+            align-items: center;
+            margin: 5% 0%;
+            h1{
+                color: #7a6d4e;
+                font-size: 26px;
+                text-align: center;
+            }
+            img{
+                width: 50%;
+            }
+
+            span{
+                margin: 2% 0%;
+                text-align: center;
+                font-size: 16px;
+                color: black;
+            }
+
+            h3{
+                font-size: 22px;
+                text-align: center;
+                color: #7a6d4e;
+            }
+            .about-contact{
+                margin: 10% 0%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                width: 100%;
+                .social-media{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    margin-top: 5%;
+                    i{
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        img{
+                            text-align: center;
+                            width: 70%;
+                        }
                     }
                 }
             }

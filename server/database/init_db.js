@@ -248,21 +248,6 @@ db.connect((err) => {
         }
 
         console.log('Events Table created or already exists.');
-
-        // Create the scheduled event for deleting old entries
-        const createDeleteEvent = `
-        CREATE EVENT IF NOT EXISTS delete_old_event
-        ON SCHEDULE EVERY 1 HOUR
-        DO
-        DELETE FROM events WHERE date_event < NOW();`;
-    
-        db.query(createDeleteEvent, (err, results) => {
-            if (err) {
-                console.error('Error creating delete event:', err);
-                return;
-            }
-            console.log('Delete event created successfully.');
-        });
     });   
 
     db.query(createUserThemes_purchasesTable, (err, results) => {
@@ -290,21 +275,6 @@ db.connect((err) => {
         }
     
         console.log('Disponibilite Table created or already exists.');
-    
-        // Create the scheduled event for deleting old entries
-        const createDeleteEvent = `
-        CREATE EVENT IF NOT EXISTS delete_old_disponibilite
-        ON SCHEDULE EVERY 1 HOUR
-        DO
-        DELETE FROM disponibilite WHERE start_date < NOW();`;
-    
-        db.query(createDeleteEvent, (err, results) => {
-            if (err) {
-                console.error('Error creating delete event:', err);
-                return;
-            }
-            console.log('Delete event created successfully.');
-        });
     });
 
     db.query(createBlogsTable, (err, results) => {

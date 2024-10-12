@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const path = require('path');
 const http = require('http');
-
+const pool = require('./database/db');
 const init_db = require('./database/init_db');
 const authRoutes = require('./routes/auth');
 const themesRoutes = require('./routes/themes');
@@ -33,22 +33,22 @@ app.use(express.json());
 app.use(cookieParser());
 // CORS setup
 
-app.use(cors());
+//app.use(cors());
 
 // cors settings
-app.options("*", cors());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,PUT,POST,DELETE,PATCH,OPTIONS"
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type,Authorization,Content-Length,X-Requested-With"
-  );
-  next();
-});
+//app.options("*", cors());
+//app.use((req, res, next) => {
+  //res.header("Access-Control-Allow-Origin", "*");
+  //res.header(
+    //"Access-Control-Allow-Methods",
+    //"GET,PUT,POST,DELETE,PATCH,OPTIONS"
+  //);
+  //res.header(
+    //"Access-Control-Allow-Headers",
+    //"Content-Type,Authorization,Content-Length,X-Requested-With"
+  //);
+  //next();
+//});
 
 app.use(
     cors({
@@ -97,3 +97,31 @@ app.post('/sendMessage', oneToMany.sendMessage)
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+function runEveryTwoHours() {
+  const deleteDisponibilite = `DELETE FROM disponibilite WHERE end_date < NOW();`;
+  
+  const deleteOldEvents = `DELETE FROM events WHERE DATE_ADD(date_event, INTERVAL 1 HOUR) < NOW();`;
+  
+  pool.query(deleteDisponibilite, (err, results) => {
+      if (err) {
+          console.error('Error deleting disponibilite:', err);
+          return;
+      }
+      console.log('Disponibilite deleted successfully.');
+  });
+  
+  pool.query(deleteOldEvents, (err, results) => {
+      if (err) {
+          console.error('Error deleting event:', err);
+          return;
+      }
+      console.log('Event deleted successfully.');
+  });
+}
+
+// Run the function every 2 hours
+setInterval(runEveryTwoHours, 1 * 60 * 60 * 1000);
+
+// Optional: Run the function immediately upon server startup
+runEveryTwoHours();

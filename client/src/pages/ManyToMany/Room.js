@@ -1,16 +1,18 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import { useParams } from "react-router";
 import VideoPlayer from "./VideoPlayer";
 import Controls from "./Controls";
-import SideControls from "./SideControls";
 import SidePanel from "./SidePanel";
 import useUser from "../../hooks/useUser";
 import '../../scss/pages/OneToManyMeet/Room.scss'
 
 const Room = () => {
+  const navigate = useNavigate()
   const {user, loading} = useUser();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [peers, setPeers] = useState([]);
   const [micActive, setMicActive] = useState(true);
   const [cameraActive, setCameraActive] = useState(true);
@@ -27,34 +29,38 @@ const Room = () => {
   const [inMeet, setInMeet] = useState(false)
 
   const enter = () => {
-    setInMeet(true)
-    socketRef.current = io.connect(
-      `http://localhost:5000`
-    );
+    setInMeet(true);
+    socketRef.current = io.connect(`http://localhost:5000`);
+  
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         userVideo.current.srcObject = stream;
         userStream.current = stream;
         userVideo.current.muted = true;
-
-        // initially turn off audio and video after aquiring them
+  
+        // Initially turn off audio and video after acquiring them
         muteAudio();
         muteVideo();
-
+  
         window.addEventListener("popstate", leave);
         window.addEventListener("beforeunload", leave);
-
+  
+        // Emit join room event and handle response
         socketRef.current.emit("b-join room", { roomID, userName: user });
+  
+        // Handle server errors like room not allowed or room full
+        socketRef.current.on("error", (errorMsg) => {
+          alert(errorMsg); // Show the error message
+          navigate("/");   // Navigate to the home page
+        });
+  
         socketRef.current.on("f-users joined", (users) => {
           const temp = [];
-
           users.forEach(({ id, userName }) => {
-            // Check if the peer with the same ID is already in the peers state
             const existingPeer = peers.find((peer) => peer.peerID === id);
-
+  
             if (!existingPeer) {
-              // Peer is not already in the state, create a new one
               const peer = createPeer(id, socketRef.current.id, stream);
               peersRef.current.push({
                 peerID: id,
@@ -67,19 +73,16 @@ const Room = () => {
                 peer,
               });
             } else {
-              // Peer is already in the state, push the existing one
               temp.push(existingPeer);
             }
           });
           setPeers(temp);
         });
-
+  
         socketRef.current.on("f-get request", ({ signal, from, userName }) => {
-          // Check if the peer with the same ID is already in the peers state
           const existingPeer = peers.find((peer) => peer.peerID === from);
-
+  
           if (!existingPeer) {
-            // Peer is not already in the state, add a new peer
             const peer = addPeer(signal, from, stream);
             peersRef.current.push({
               peerID: from,
@@ -91,65 +94,34 @@ const Room = () => {
               peerID: from,
               userName,
             };
-
+  
             setPeers((users) => [...users, peerObj]);
           } else {
             console.log(`Peer with ID ${from} already exists.`);
           }
         });
-
+  
         socketRef.current.on("f-accepted connect", ({ signal, id }) => {
           const item = peersRef.current.find((p) => p.peerID === id);
           item.peer.signal(signal);
         });
-
-        socketRef.current.on(
-          "f-receive message",
-          ({ message, userName, time }) => {
-            // console.log(message, userName, time);
-            let obj = { message, userName, time, file: false };
-            setMessages((prevMessages) => [obj, ...prevMessages]);
-            //const sound = new Audio(notification);
-            //sound.play();
-          }
-        );
-        /*socketRef.current.on("f-recieve sound", (target) => {
-          let sound;
-          switch (target) {
-            case "moye":
-              sound = new Audio(moye);
-              break;
-            case "baja":
-              sound = new Audio(baja);
-              break;
-            case "clap":
-              sound = new Audio(clap);
-              break;
-            case "duck":
-              sound = new Audio(duck);
-              break;
-            case "fart":
-              sound = new Audio(fart);
-              break;
-            case "fun":
-              sound = new Audio(fun);
-              break;
-            case "kiss":
-              sound = new Audio(kiss);
-              break;
-
-            default:
-              break;
-          }
-          sound.play();
-        });*/
+  
+        socketRef.current.on("f-receive message", ({ message, userName, time }) => {
+          let obj = { message, userName, time, file: false };
+          setMessages((prevMessages) => [obj, ...prevMessages]);
+        });
+  
         socketRef.current.on("f-recieve file", recieveFile);
-
+  
         socketRef.current.on("user left", (id) => {
           handleLeave(id);
         });
+      })
+      .catch((err) => {
+        console.error("Error getting media devices:", err);
+        navigate("/"); // Navigate to home if there’s an issue with media devices
       });
-  };
+  };  
 
   const createPeer = (userToConnect, from, stream) => {
     const existingPeer = peersRef.current.find(p => p.peerID === userToConnect);
@@ -402,11 +374,12 @@ const muteVideo = () => {
                 <>
                   {/* Sort the peers array to display admin first */}
                   {peers
-                    .sort((a, b) => (a.userName.role === 'admin' ? -1 : 1)) // Sort admins first
-                    .slice(0, 10)
+                    .sort((a, b) => (a.userName.role === 'admin' ? -1 : 1))
+                    .slice(0, isMobile ? 2 : 10)
                     .map((p, key) => (
                       <>
-                      <VideoPlayer key={p.peerID} peer={p.peer} user={p.userName} />
+                        <VideoPlayer key={p.peerID} peer={p.peer} user={p.userName} />
+                        <VideoPlayer key={p.peerID} peer={p.peer} user={p.userName} />
                       </>
                     ))}
                 </>
@@ -439,13 +412,13 @@ const muteVideo = () => {
                 {/* Show 1 more user next to the host */}
                 {peers.length > 1 && (
                   <div className="extra-user">
-                    <VideoPlayer key={peers[10].peerID} peer={peers[10].peer} user={peers[10].userName} />
+                    <VideoPlayer key={peers[10]?.peerID} peer={peers[10]?.peer} user={peers[10]?.userName} />
                   </div>
                 )}
                 {/* Display remaining users count */}
-                {peers.length > 11 && (
+                {peers.length > (isMobile ? 2 : 11) && (
                   <div className="remaining-users">
-                    {peers.length - 11} more users
+                    {peers.length - (isMobile ? 2 : 11)} more users
                   </div>
                 )}
             </div>

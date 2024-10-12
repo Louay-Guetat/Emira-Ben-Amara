@@ -88,3 +88,27 @@
         }
     }
 }
+
+@media screen and (max-width: 768px){
+    .SignIn {
+        .signin-form {
+            width: 100%;
+            max-width: 90%;
+    
+            h1 {
+                margin-bottom: 1.5rem;
+                font-size: 2rem;
+            }
+    
+            .form-group {
+                margin-bottom: 1.5rem;
+                text-align: left;
+                width: 80%;
+            }
+
+            .signin-btn {
+                width: 40%;
+            }
+        }
+    }
+}

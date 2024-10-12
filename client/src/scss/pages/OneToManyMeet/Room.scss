@@ -76,6 +76,7 @@
                 }
                 h6{
                     color: black;
+                    margin: 50% 0%;
                 }
                 .controlsWrapper{
                     display: flex;
@@ -225,4 +226,218 @@
             }
         }
     }
+}
+
+@media screen and (max-width: 768px){
+    .Room{
+        flex-direction: column;
+    
+        #start-event {
+            width: 80%;
+        }
+    
+        .video-components{
+            display: flex;
+            flex-direction: column;
+            flex: 80%;
+            height: 100vh;
+    
+            .attendents {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                min-height: 60vh;
+                overflow: hidden;
+                align-items: baseline;
+                justify-content: center;
+
+                .display-user {
+                    margin-top: 0.5%;
+                    margin-left: 0%;
+                    border-radius: 25px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+
+                    video {
+                        width: 100%;
+                        height: 25vh;
+                        border-radius: 25px;
+                        object-fit: cover; /* Ensures the video covers the div while keeping its aspect ratio */
+                    }
+    
+                    h6{
+                        margin: 5% 0%;
+                        color: black;
+                    }
+                }
+            }
+    
+            .host{
+                display: flex;
+                align-items: center;
+                height: 40vh;
+                justify-content: center;
+                .my-video{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    object-fit: cover;
+                    video{
+                        width: 75%;
+                        border-radius: 25px;
+                    }
+                    h6{
+                        color: black;
+                    }
+                    .controlsWrapper{
+                        display: flex;
+                        width: 100%;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 2%;
+                        .cntBtn{
+                            display: flex;
+                            border: none;
+                            background-color: black;
+                            padding: 10px 10px;
+                            border-radius: 5px;
+                            svg{
+                                font-size: 14px;
+                                color: $main-color;
+                            }
+        
+                            &:last-child{
+                                svg{
+                                    color: red;
+                                }
+                            }
+                        }
+                    }
+                }
+    
+                .remaining-users{
+                    position: absolute;
+                    z-index: 99999;
+                    position: absolute;
+                    bottom: 12.5%;
+                    left: 25%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: auto;
+                    margin-right: auto;
+                    width: 40%;
+                    height: 20vh;
+                    background-color: rgb(31, 32, 32);
+                    border-radius: 25px;
+                }
+            }
+        }
+    
+        .utils{
+            flex: 20%;
+            height: 100vh;
+            background-color: rgb(31, 32, 32);
+            display: flex;
+            flex-direction: column;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+    
+            .sidePanelWrapper{
+                min-height: 100vh;
+                max-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                margin-left: 2%;
+    
+                .panel{
+                    max-height: 85vh;
+                    overflow-y: auto;
+                    font-size: 20px;    
+                    scrollbar-width: thin;
+                    scrollbar-color: #2478dc #f4f5f9;
+                    
+                    &::-webkit-scrollbar {
+                        width: 5px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: #f4f5f9;
+                    }
+                      
+                    &::-webkit-scrollbar-thumb {
+                        background-color: #2478dc; 
+                        border-radius: 50px;
+                        border: 1px solid #f4f5f9;
+                    }
+                      
+                    &::-webkit-scrollbar-thumb:hover {
+                        background-color: #0056a6;
+                    }  
+                    
+                    .message{
+                        display: flex;
+                        align-items: center;
+                        padding: 5px 10px;
+                        p{
+                            margin: 0;
+                            font-size: 14px;
+                            display: flex;
+                            align-items: center;
+                        }
+    
+                        .msgFile{
+                            display: flex;
+                            align-items: center;
+                            width: 100%;
+                            .downBtn{
+                                width: 50%;
+                                padding: 10px 0px;
+                                cursor: pointer;
+                                svg{
+                                    font-size: 32px;
+                                }
+                            }
+                        }
+                    }
+                    .self{
+                        background-color: rgba($color: #fff, $alpha: 0.2);
+                        border-radius: 10px;
+                    }
+                }
+                .inputPanel{
+                    margin-top: auto;
+                    margin-bottom: 5%;
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    .fileInput{
+                        cursor: pointer;
+                        width: 10%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        svg{
+                            font-size: 24px;
+                        }
+                    }
+                    .messageInput{
+                        padding: 10px;
+                        width: 90%;
+                    }
+    
+                    .send{
+                        border: none;
+                        background-color: transparent;
+                        svg{
+                            font-size: 24px;
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+    }    
 }
