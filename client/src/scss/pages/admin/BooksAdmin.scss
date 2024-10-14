@@ -26,28 +26,7 @@
                 font-size: 16px;
                 border: 1px solid $main-color;
                 border-radius: 25px;
-            }
-        }
-        
-        textarea{
-            width: 75%;
-            height: 20vh;
-            padding: 12px 20px;
-            font-size: 16px;
-            resize: vertical;
-            border: 1px solid $main-color;
-        }
-
-        .files-input{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5%;
-            width: 50%;
-            margin: 2% 0%;
-            input{
                 color: black;
-                border: 1px solid $main-color;
             }
         }
 

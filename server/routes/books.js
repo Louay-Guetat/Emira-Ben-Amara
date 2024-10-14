@@ -9,6 +9,7 @@ const fs = require('fs');
 const uploadFolderBooks = 'uploads/books/books';
 const uploadFolderPreviews = 'uploads/books/previews';
 const uploadFolderImages = 'uploads/books/images';
+const uploadFolderDescriptions = 'uploads/books/descriptions';
 
 // Ensure the upload folders exist
 const ensureDirectoryExistence = (folder) => {
@@ -20,6 +21,7 @@ const ensureDirectoryExistence = (folder) => {
 ensureDirectoryExistence(uploadFolderBooks);
 ensureDirectoryExistence(uploadFolderPreviews);
 ensureDirectoryExistence(uploadFolderImages);
+ensureDirectoryExistence(uploadFolderDescriptions);
 
 // Setup multer for file uploads
 const storage = multer.diskStorage({
@@ -33,6 +35,8 @@ const storage = multer.diskStorage({
       folderPath = uploadFolderPreviews;
     } else if (file.fieldname === 'image') {
       folderPath = uploadFolderImages;
+    } else if (file.fieldname === 'description') {
+      folderPath = uploadFolderDescriptions;
     } else {
       return cb(new Error('Invalid file type'), false);
     }
@@ -48,7 +52,8 @@ const fileFilter = (req, file, cb) => {
   const allowedTypes = {
     'book': ['application/pdf'],
     'book_preview': ['application/pdf'],
-    'image': ['image/jpeg', 'image/png', 'image/jpg']
+    'image': ['image/jpeg', 'image/png', 'image/jpg'],
+    'description': ['image/jpeg', 'image/png', 'image/jpg']
   };
 
   const allowedMimeTypes = allowedTypes[file.fieldname] || [];
@@ -90,12 +95,13 @@ router.get('/getBooks', (req, res) => {
 router.post('/addBook', upload.fields([
   { name: 'book', maxCount: 1 },
   { name: 'book_preview', maxCount: 1 },
-  { name: 'image', maxCount: 1 }
+  { name: 'image', maxCount: 1 }, { name: 'description', maxCount: 1 }
 ]), (req, res) => {
-  const { title, description, price } = req.body;
+  const { title, price } = req.body;
   const book = req.files['book'] ? `/uploads/books/books/${req.files['book'][0].filename}` : null;
   const book_preview = req.files['book_preview'] ? `/uploads/books/previews/${req.files['book_preview'][0].filename}` : null;
   const image = req.files['image'] ? `/uploads/books/images/${req.files['image'][0].filename}` : null;
+  const description = req.files['description'] ? `/uploads/books/descriptions/${req.files['description'][0].filename}` : null;
 
   pool.execute(
     `INSERT INTO Books (title, description, image, book, book_preview, price) VALUES (?, ?, ?, ?, ?, ?)`,

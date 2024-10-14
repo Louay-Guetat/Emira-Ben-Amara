@@ -16,6 +16,7 @@ const eventsRoutes = require('./routes/events')
 const stripeRoutes = require('./routes/stripe')
 const blogsRoutes = require('./routes/blogs')
 const booksRoutes = require('./routes/books')
+const userRoutes = require('./routes/user')
 
 // Initialize Express app and HTTP server
 const app = express();
@@ -84,6 +85,7 @@ app.use('/events', eventsRoutes)
 app.use('/stripe', stripeRoutes)
 app.use('/blogs', blogsRoutes)
 app.use('/books', booksRoutes)
+app.use('/user', userRoutes)
 
 initializeOneToOne(server);
 initializeManyToMany(server)

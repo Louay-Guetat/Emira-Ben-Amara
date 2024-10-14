@@ -28,9 +28,10 @@ const BooksAdmin = () => {
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('description', description);
+        
         formData.append('price', price);
         if (image) formData.append('image', image);
+        if (description) formData.append('description', description);
         if (book) formData.append('book', book);
         if (bookPreview) formData.append('book_preview', bookPreview);
 
@@ -77,14 +78,7 @@ const BooksAdmin = () => {
                             />
                         </div>
                     </div>
-                    <div className="form-group" id="description-container">
-                        <label> Description </label>
-                        <textarea
-                            placeholder="Ecrivez une description sur le Livre"
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </div>
-                    <div className="files-input">
+                    <div className="text-inputs">
                         <div className="form-group">
                             <label> Image du Livre </label>
                             <input
@@ -93,6 +87,16 @@ const BooksAdmin = () => {
                                 accept="image/*"
                             />
                         </div>
+                        <div className="form-group">
+                            <label> Image du dos du livre </label>
+                            <input
+                                type="file"
+                                onChange={(e) => setDescription(e.target.files[0])}
+                                accept="image/*"
+                            />
+                        </div>
+                    </div>
+                    <div className="text-inputs">
                         <div className="form-group">
                             <label> Le Livre </label>
                             <input

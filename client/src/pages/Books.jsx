@@ -168,9 +168,7 @@ const Books = () =>{
                                             </div>
                                             <div className="details">
                                                 <h2> {book.title} </h2>
-                                                <div className='paragraph'>{book.description.split('\n').map((paragraph, index) => (
-                                                    <p key={index}>{paragraph}</p>
-                                                ))}</div>
+                                                <img src={SERVER+book.description} alt='cover' />
                                                 <div className='buttons'>
                                                     {!ownedBooks?.some((ownedBook) => ownedBook.id === book.id) && (
                                                         <button onClick={() => buyBook(book)}>Acheter Maintenant</button>
